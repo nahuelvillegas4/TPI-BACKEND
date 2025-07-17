@@ -1,5 +1,6 @@
 package back.gateway.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.cloud.gateway.route.RouteLocator;
@@ -9,12 +10,17 @@ import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 public class GWConfig {
 
     @Bean
-    public RouteLocator configurarRutas(RouteLocatorBuilder builder) {
+    public RouteLocator customRoutes(RouteLocatorBuilder builder,
+                                     @Value("${url.servicio.logistica}") String uriLogistica) {
         return builder.routes()
-                .route(p -> p
-                        .path("/get")
-                        .uri("https://postman-echo.com")
-                )
-                .build();
+            // Ruteo al servicio de logistica
+            .route("logistica", r -> r
+                .path("/api/depositos/**", "/api/camiones/**")              // cualquier /api/depositos o /api/depositos/{id}
+                .uri(uriLogistica)                      // e.g. http://localhost:8080
+            )
+            
+            // Ruteo al servicio
+
+            .build();
     }
 }
