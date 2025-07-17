@@ -19,7 +19,7 @@ public class GWConfig {
                 .uri(uriLogistica)                      // e.g. http://localhost:8080
             )
             
-            // Ruteo al servicio
+            // Ruteo al servicio PRUEBA
 
             .build();
     }
