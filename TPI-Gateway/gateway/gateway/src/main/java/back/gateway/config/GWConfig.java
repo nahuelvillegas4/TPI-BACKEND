@@ -1,15 +1,20 @@
+package back.gateway.config;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.cloud.gateway.route.RouteLocator;
+import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
+
 @Configuration
 public class GWConfig {
 
     @Bean
-    public RouteLocator customRoutes(RouteLocatorBuilder builder,
-                                     @Value("${url.servicio.pedidos}") String uriPedidos,
-                                     @Value("${url.servicio.logistica}") String uriLogistica) {
+    public RouteLocator configurarRutas(RouteLocatorBuilder builder) {
         return builder.routes()
-                .route(p -> p.path("/api/solicitudes/**", "/api/seguimiento/**")
-                        .uri(uriPedidos))
-                .route(p -> p.path("/api/tarifas/**", "/api/logistica/**")
-                        .uri(uriLogistica))
+                .route(p -> p
+                        .path("/get")
+                        .uri("https://postman-echo.com")
+                )
                 .build();
     }
 }
