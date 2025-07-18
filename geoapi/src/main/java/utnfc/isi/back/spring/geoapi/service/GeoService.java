@@ -34,12 +34,18 @@ public class GeoService {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode root = mapper.readTree(response.getBody());
         JsonNode leg = root.path("rows").get(0).path("elements").get(0);
+
+        String duracion = leg.path("duration").path("text").asText();
+        String[] partes = duracion.split(" ");
+        String horas = partes[0] + " " + partes[1];
+        String minutos = partes[2] + " " + partes[3];
         
         DistanciaDTO dto = new DistanciaDTO();
         dto.setOrigen(origen);
         dto.setDestino(destino);
         dto.setKilometros(leg.path("distance").path("value").asDouble() / 1000);
-        dto.setDuracionTexto(leg.path("duration").path("text").asText());
+        dto.setDuracionHoras(horas);
+        dto.setDuracionMinutos(minutos);
         return dto;
     }
     

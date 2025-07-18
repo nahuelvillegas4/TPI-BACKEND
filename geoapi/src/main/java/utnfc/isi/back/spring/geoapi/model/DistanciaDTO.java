@@ -7,6 +7,7 @@ public class DistanciaDTO {
     private String origen;
     private String destino;
     private double kilometros;
-    private String duracionTexto;
+    private String duracionHoras;
+    private String duracionMinutos;
     
 }

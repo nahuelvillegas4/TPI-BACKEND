@@ -4,7 +4,6 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,9 +14,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import io.micrometer.core.ipc.http.HttpSender.Response;
 import lombok.extern.slf4j.Slf4j;
-import tpi.backend.logistica.dtos.CotizacionSolicitudDTO;
 import tpi.backend.logistica.dtos.DistanciaDTO;
 import tpi.backend.logistica.dtos.RespuestaCotizacionDTO;
 import tpi.backend.logistica.entities.Ciudad;
@@ -99,13 +96,27 @@ public class SolicitudControler {
             .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tarifa no encontrada"));
 
         double monto = (d1.getKilometros() + d2.getKilometros()) * tarifaKM.getTarifa();
-        String duracion = d1.getDuracionTexto() + " " + d2.getDuracionTexto();
+        String[] horas1 = d1.getDuracionHoras().split(" ");
+        String[] horas2 = d2.getDuracionHoras().split(" ");
+
+        String[] minutos1 = d1.getDuracionMinutos().split(" ");
+        String[] minutos2 = d2.getDuracionMinutos().split(" ");
+        //horas = Integer.parseInt(partes[0].trim())
+
+        int horas = Integer.parseInt(horas1[0].trim()) + Integer.parseInt(horas2[0].trim());
+        int minutos = Integer.parseInt(minutos1[0].trim()) + Integer.parseInt(minutos2[0].trim());
+
+        if(minutos > 59){
+            horas++;
+            minutos = minutos - 60;
+        }
+
+        String duracion = horas + " " + horas1[1] + " " + minutos + " " + minutos1[1];
 
         RespuestaCotizacionDTO respuesta = new RespuestaCotizacionDTO(monto, duracion);
 
         return ResponseEntity.ok(respuesta);
-
-        }
+    }
 
     
     public ResponseEntity<DistanciaDTO> obtenerDistancia(Ciudad ciudad, Deposito deposito){
