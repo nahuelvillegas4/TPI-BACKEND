@@ -22,3 +22,17 @@ INSERT INTO deposito (ciudad_id, direccion, latitud, longitud) VALUES
   (8, 'Mitre 505', -38.9516, -68.0590),
   (9, 'Brown 606', -38.7196, -62.2726),
   (10,'9 de Julio 707', -27.3628, -55.8960);
+
+
+
+INSERT INTO CAMION (capacidad_peso, capacidad_volumen, disponible) VALUES
+  (10000, 40, TRUE),
+  (8000, 35, TRUE),
+  (12000,50, FALSE),
+  (9000, 45, TRUE),
+  (11000,48, TRUE),
+  (7000, 30, FALSE),
+  (9500, 42, TRUE),
+  (10500,47, TRUE),
+  (8500, 38, FALSE),
+  (11500,49, TRUE);
