@@ -72,4 +72,12 @@ public class CiudadController {
         CiudadDto dto = ciudadService.obtenerPorId(id);
         return ResponseEntity.ok(dto);
     }
+
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarCiudad(@PathVariable Long id) {
+        ciudadService.eliminar(id);
+        return ResponseEntity.noContent().build();  // 204 No Content
+    }
+
 }

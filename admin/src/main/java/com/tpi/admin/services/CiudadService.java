@@ -73,6 +73,15 @@ public class CiudadService {
         return mapToDto(entidad);
     }
 
+    // Borrar por id
+    @Transactional
+    public void eliminar(Long id) {
+        if (!repo.existsById(id)) {
+            throw new EntityNotFoundException("Ciudad no encontrada con id " + id);
+        }
+        repo.deleteById(id);
+    }
+
     // --- helpers privados de mapeo manual ---
 
     private CiudadDto mapToDto(Ciudad c) {
