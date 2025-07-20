@@ -61,3 +61,15 @@ INSERT INTO contenedor (peso, volumen, estado, cliente_id) VALUES
   (1100.0, 11.1, 'en_espera_solicitud', 8),
   ( 670.4,  6.7, 'en_espera_solicitud', 9),
   (2200.0, 22.0, 'en_espera_solicitud', 10);
+
+
+INSERT INTO tarifakm (tarifa) VALUES
+  (5.0),   -- Categoría 1
+  (10.0),  -- Categoría 2
+  (15.0),  -- Categoría 3
+  (20.0),  -- Categoría 4
+  (25.0);  -- Categoría 5
+
+INSERT INTO Tarifa_Base (tarifa) VALUES
+  (200.0),  -- Monto base de transporte
+  (20.0);   -- Costo de estadía por día
