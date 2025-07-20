@@ -1,13 +1,13 @@
-package com.tpi.admin.service;
+package com.tpi.admin.services;
 
-import com.tpi.admin.dto.DepositoDto;
-import com.tpi.admin.dto.CrearDepositoDto;
-import com.tpi.admin.dto.ActualizarDepositoDto;
+import com.tpi.admin.dtos.DepositoDto;
+import com.tpi.admin.dtos.CrearDepositoDto;
+import com.tpi.admin.dtos.ActualizarDepositoDto;
 import com.tpi.admin.exception.EntityNotFoundException;
-import com.tpi.admin.model.Deposito;
-import com.tpi.admin.model.Ciudad;
-import com.tpi.admin.repository.DepositoRepository;
-import com.tpi.admin.repository.CiudadRepository;
+import com.tpi.admin.entities.Deposito;
+import com.tpi.admin.entities.Ciudad;
+import com.tpi.admin.repositories.DepositoRepository;
+import com.tpi.admin.repositories.CiudadRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

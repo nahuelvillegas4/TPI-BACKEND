@@ -1,9 +1,9 @@
 package com.tpi.admin.controller;
 
-import com.tpi.admin.dto.DepositoDto;
-import com.tpi.admin.dto.CrearDepositoDto;
-import com.tpi.admin.dto.ActualizarDepositoDto;
-import com.tpi.admin.service.DepositoService;
+import com.tpi.admin.dtos.DepositoDto;
+import com.tpi.admin.dtos.CrearDepositoDto;
+import com.tpi.admin.dtos.ActualizarDepositoDto;
+import com.tpi.admin.services.DepositoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

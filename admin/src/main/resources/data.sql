@@ -36,3 +36,28 @@ INSERT INTO CAMION (capacidad_peso, capacidad_volumen, disponible) VALUES
   (10500,47, TRUE),
   (8500, 38, FALSE),
   (11500,49, TRUE);
+
+INSERT INTO cliente (nombre, email, password) VALUES
+  ('Juan Pérez','juan.perez@example.com','pass123'),
+  ('María Gómez','maria.gomez@example.com','pwd456'),
+  ('Luis Rodríguez','luis.rodriguez@example.com','qwerty789'),
+  ('Ana Fernández','ana.fernandez@example.com','abc12345'),
+  ('Carlos Díaz','carlos.diaz@example.com','securepwd'),
+  ('Lucía Martínez','lucia.martinez@example.com','marti2025'),
+  ('Pedro Sánchez','pedro.sanchez@example.com','psanchez'),
+  ('Sofía López','sofia.lopez@example.com','lopez!@#'),
+  ('Diego Torres','diego.torres@example.com','torres321'),
+  ('Valentina Ruiz','valentina.ruiz@example.com','ruizRuiz');
+
+
+INSERT INTO contenedor (peso, volumen, estado, cliente_id) VALUES
+  ( 500.0,  5.0, 'en_espera_solicitud', 1),
+  (1200.5, 12.3, 'en_espera_solicitud', 2),
+  ( 800.0,  8.7, 'en_espera_solicitud', 3),
+  (1500.2, 15.0, 'en_espera_solicitud', 4),
+  (2000.0, 20.5, 'en_espera_solicitud', 5),
+  ( 950.0,  9.5, 'en_espera_solicitud', 6),
+  (1750.8, 18.2, 'en_espera_solicitud', 7),
+  (1100.0, 11.1, 'en_espera_solicitud', 8),
+  ( 670.4,  6.7, 'en_espera_solicitud', 9),
+  (2200.0, 22.0, 'en_espera_solicitud', 10);

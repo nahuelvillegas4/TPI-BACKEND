@@ -1,7 +1,7 @@
 package com.tpi.admin.controller;
 
-import com.tpi.admin.dto.*;
-import com.tpi.admin.service.CamionService;
+import com.tpi.admin.dtos.*;
+import com.tpi.admin.services.CamionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

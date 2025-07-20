@@ -1,6 +1,6 @@
-package com.tpi.admin.repository;
+package com.tpi.admin.repositories;
 
-import com.tpi.admin.model.Deposito;
+import com.tpi.admin.entities.Deposito;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 

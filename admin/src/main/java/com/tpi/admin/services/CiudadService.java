@@ -1,11 +1,11 @@
-package com.tpi.admin.service;
+package com.tpi.admin.services;
 
-import com.tpi.admin.dto.CiudadDto;
-import com.tpi.admin.dto.CrearCiudadDto;
-import com.tpi.admin.dto.ActualizarCiudadDto;
+import com.tpi.admin.dtos.CiudadDto;
+import com.tpi.admin.dtos.CrearCiudadDto;
+import com.tpi.admin.dtos.ActualizarCiudadDto;
 import com.tpi.admin.exception.EntityNotFoundException;
-import com.tpi.admin.model.Ciudad;
-import com.tpi.admin.repository.CiudadRepository;
+import com.tpi.admin.entities.Ciudad;
+import com.tpi.admin.repositories.CiudadRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

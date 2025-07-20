@@ -1,9 +1,9 @@
-package com.tpi.admin.service;
+package com.tpi.admin.services;
 
-import com.tpi.admin.dto.*;
+import com.tpi.admin.dtos.*;
 import com.tpi.admin.exception.EntityNotFoundException;
-import com.tpi.admin.model.Camion;
-import com.tpi.admin.repository.CamionRepository;
+import com.tpi.admin.entities.Camion;
+import com.tpi.admin.repositories.CamionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

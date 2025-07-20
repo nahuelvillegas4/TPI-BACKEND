@@ -1,4 +1,4 @@
-package com.tpi.admin.model;
+package com.tpi.admin.entities;
 
 import jakarta.persistence.*;
 import lombok.*;

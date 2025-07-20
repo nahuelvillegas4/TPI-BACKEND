@@ -1,9 +1,9 @@
 package com.tpi.admin.controller;
 
-import com.tpi.admin.dto.CiudadDto;
-import com.tpi.admin.dto.CrearCiudadDto;
-import com.tpi.admin.dto.ActualizarCiudadDto;
-import com.tpi.admin.service.CiudadService;
+import com.tpi.admin.dtos.CiudadDto;
+import com.tpi.admin.dtos.CrearCiudadDto;
+import com.tpi.admin.dtos.ActualizarCiudadDto;
+import com.tpi.admin.services.CiudadService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;

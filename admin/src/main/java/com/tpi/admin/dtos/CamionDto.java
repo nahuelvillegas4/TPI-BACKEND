@@ -1,5 +1,5 @@
 // CamionDto.java
-package com.tpi.admin.dto;
+package com.tpi.admin.dtos;
 
 import lombok.*;
 
