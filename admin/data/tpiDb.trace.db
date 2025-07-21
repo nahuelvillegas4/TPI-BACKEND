@@ -1,0 +1,15 @@
+2025-06-13 10:01:34.284011-03:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabla "CIUDAD" no encontrada
+Table "CIUDAD" not found; SQL statement:
+CREATE TABLE deposito (
+  id IDENTITY PRIMARY KEY,
+  ciudad_id BIGINT NOT NULL,
+  direccion VARCHAR(255) NOT NULL,
+  latitud DOUBLE NOT NULL,
+  longitud DOUBLE NOT NULL,
+  FOREIGN KEY (ciudad_id) REFERENCES ciudad(id)
+) [42102-232]
+2025-07-21 12:01:44.714922-03:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Error de Sintaxis en sentencia SQL "[*]CAMION"; se esperaba "COMMIT, CREATE, CALL, CHECKPOINT, COMMENT"
+Syntax error in SQL statement "[*]CAMION"; expected "COMMIT, CREATE, CALL, CHECKPOINT, COMMENT"; SQL statement:
+CAMION [42001-232]
