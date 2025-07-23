@@ -11,6 +11,6 @@ public class CrearSolicitudDto {
     @NotNull private Long depositoId;
     /** Opcional al crear */
     private Long camionId;
-    @NotNull private Double costoEstimado;
-    @NotNull private Double tiempoEstimadoHoras;
+    private Double costoEstimado;
+    private Double tiempoEstimadoHoras;
 }

@@ -18,6 +18,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import tpi.backend.logistica.dtos.DatosRespuestaPosteo;
 import tpi.backend.logistica.dtos.PostSolicitudDTO;
+import tpi.backend.logistica.dtos.DepositoDTO;
 import tpi.backend.logistica.dtos.RespuestaCotizacionDTO;
 import tpi.backend.logistica.entities.Ciudad;
 import tpi.backend.logistica.services.CiudadService;
@@ -25,6 +26,7 @@ import tpi.backend.logistica.services.SolicitudService;
 import tpi.backend.logistica.services.TarifaBaseService;
 import tpi.backend.logistica.services.TarifaKMService;
 import tpi.backend.logistica.services.TramoService;
+import tpi.backend.logistica.clients.DepositoClient;
 
 @RestController
 @Slf4j
@@ -37,12 +39,14 @@ public class SolicitudControler {
     private final CiudadService ciudadService;
     private final SolicitudService solicitudService;
     private final HttpServletRequest request;
+    private final DepositoClient depositoClient;
 
     public SolicitudControler(CiudadService ciudadService,
-        TarifaBaseService tarifaBaseService, TarifaKMService tarifaKMService, SolicitudService solicitudService, TramoService tramoService, HttpServletRequest request){
+        TarifaBaseService tarifaBaseService, TarifaKMService tarifaKMService, DepositoClient depositoClient, SolicitudService solicitudService, TramoService tramoService, HttpServletRequest request){
         this.ciudadService = ciudadService;
         this.solicitudService = solicitudService;
         this.request = request;
+        this.depositoClient = depositoClient;
     }
 
     //ResponseEntity<RespuestaCotizacionDTO>
@@ -72,17 +76,23 @@ public class SolicitudControler {
     }
 
     @PostMapping("/crear")
-    public ResponseEntity<DatosRespuestaPosteo> crearRutas(@RequestBody PostSolicitudDTO solicitudPost){
+    public ResponseEntity<DatosRespuestaPosteo> crearRutas(@RequestBody PostSolicitudDTO solicitudPost) {
+        // 2. Invocamos al servicio de depósitos usando el idCity correcto
+        DepositoDTO deposito = depositoClient
+            .getDepositoById(solicitudPost.getIdCiudadDeposito());  // ② getIdCiudadDeposito()
 
-        System.out.println(solicitudPost);
-        System.out.println("Headers: " + request.getHeader("Content-Type"));
+        // 3. Usamos el id de ciudad que nos devolvió el depósito
+        Ciudad ciudadDeposito = ciudadService
+            .obtenerCiudad(deposito.getIdCiudad())                // ③ deposito.getIdCiudad()
+            .orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.NOT_FOUND, "Ciudad del depósito no encontrada"));
 
-        ResponseEntity<DatosRespuestaPosteo> respuesta = solicitudService.crearRutas(solicitudPost);
+        // 4. Delegamos al service pasándole la entidad ciudadDeposito
+        DatosRespuestaPosteo resultado = solicitudService
+            .crearRutas(solicitudPost, ciudadDeposito)             // ahora recibe Ciudad
+            .getBody();
 
-        DatosRespuestaPosteo posteoConfirmado = respuesta.getBody();
-
-        return ResponseEntity.ok(posteoConfirmado);
-        
+        return ResponseEntity.ok(resultado);
     }
 }
 

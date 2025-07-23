@@ -148,47 +148,82 @@ public class SolicitudService {
         return new Timestamp(salida.getTime() + tiempoAdicional1);
     }
 
-    public ResponseEntity<DatosRespuestaPosteo> crearRutas(PostSolicitudDTO solicitudPost) {
+    public ResponseEntity<DatosRespuestaPosteo> crearRutas(
+        PostSolicitudDTO solicitudPost,
+        Ciudad ciudadDeposito
+) {
+    // 1. Cargo ciudad origen y destino
+    Ciudad ciudadOrigen = ciudadService
+        .obtenerCiudad(solicitudPost.getIdCiudadOrigen())
+        .orElseThrow(() -> new ResponseStatusException(
+            HttpStatus.NOT_FOUND, "Ciudad origen no encontrada"));
 
-        System.out.println(solicitudPost.getIdCiudadDeposito());
+    Ciudad ciudadDestino = ciudadService
+        .obtenerCiudad(solicitudPost.getIdCiudadDestino())
+        .orElseThrow(() -> new ResponseStatusException(
+            HttpStatus.NOT_FOUND, "Ciudad destino no encontrada"));
 
-        Ciudad ciudadOrigen = ciudadService
-            .obtenerCiudad(solicitudPost.getIdCiudadOrigen())
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ciudad origen no encontrada"));
+    // 2. Extraigo las coordenadas del depósito de la entidad
+    double latitudDeposito  = ciudadDeposito.getLatitud();
+    double longitudDeposito = ciudadDeposito.getLongitud();
 
-        Ciudad ciudadDestino = ciudadService
-            .obtenerCiudad(solicitudPost.getIdCiudadDestino())
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ciudad destino no encontrada"));
-        
-        Ciudad ciudadDeposito = ciudadService
-            .obtenerCiudad(solicitudPost.getIdCiudadDeposito())
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ciudad deposito no encontrada"));
-        
-        ResponseEntity<DistanciaDTO> distancia1 = obtenerDistancia(ciudadOrigen, solicitudPost.getLatitudDeposito(), solicitudPost.getLongitudDeposito());
-        ResponseEntity<DistanciaDTO> distancia2 = obtenerDistancia(ciudadDestino, solicitudPost.getLatitudDeposito(), solicitudPost.getLongitudDeposito());
+    // 3. Consulto distancias
+    ResponseEntity<DistanciaDTO> distancia1 = 
+        obtenerDistancia(ciudadOrigen,  latitudDeposito, longitudDeposito);
+    ResponseEntity<DistanciaDTO> distancia2 = 
+        obtenerDistancia(ciudadDestino, latitudDeposito, longitudDeposito);
 
-        DistanciaDTO d1 = distancia1.getBody();
-        DistanciaDTO d2 = distancia2.getBody();        
-    
-        if (!distancia1.getStatusCode().is2xxSuccessful() || !distancia2.getStatusCode().is2xxSuccessful()) {
-            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Error al obtener distancias");
-        }
-
-        Timestamp fechaSalida1 = new Timestamp(System.currentTimeMillis());
-        Timestamp fechaLlegada1 = obtenerLlegada(fechaSalida1, d1);
-
-        Timestamp fechaSalida2 = fechaLlegada1;
-        Timestamp fechaLlegada2 = obtenerLlegada(fechaSalida2, d2);
-
-        Tramo_Ruta tramo1 = new Tramo_Ruta(null, solicitudPost.getIdSolicitud(), 1, TipoTramo.origen_deposito, ciudadOrigen, ciudadDeposito, fechaSalida1, fechaLlegada1, null, null);
-        Tramo_Ruta tramo2 = new Tramo_Ruta(null, solicitudPost.getIdSolicitud(), 2, TipoTramo.deposito_origen, ciudadDeposito, ciudadDestino, fechaSalida2, fechaLlegada2, null, null);
-
-        Tramo_rutaDTO respuesta1 = tramoService.crearTramo(tramo1);
-        Tramo_rutaDTO respuesta2 = tramoService.crearTramo(tramo2);
-
-        DatosRespuestaPosteo respuesta = new DatosRespuestaPosteo(respuesta1, respuesta2);
-
-        return ResponseEntity.ok(respuesta);
+    if (!distancia1.getStatusCode().is2xxSuccessful() ||
+        !distancia2.getStatusCode().is2xxSuccessful()) {
+        throw new ResponseStatusException(
+            HttpStatus.BAD_GATEWAY, "Error al obtener distancias");
     }
+
+    DistanciaDTO d1 = distancia1.getBody();
+    DistanciaDTO d2 = distancia2.getBody();
+
+    // 4. Calculo tiempos de salida y llegada
+    Timestamp fechaSalida1  = new Timestamp(System.currentTimeMillis());
+    Timestamp fechaLlegada1 = obtenerLlegada(fechaSalida1, d1);
+
+    Timestamp fechaSalida2  = fechaLlegada1;
+    Timestamp fechaLlegada2 = obtenerLlegada(fechaSalida2, d2);
+
+    // 5. Construyo los tramos
+    Tramo_Ruta tramo1 = new Tramo_Ruta(
+        null,
+        solicitudPost.getIdSolicitud(),
+        1,
+        TipoTramo.origen_deposito,
+        ciudadOrigen,
+        ciudadDeposito,
+        fechaSalida1,
+        fechaLlegada1,
+        null,
+        null
+    );
+
+    Tramo_Ruta tramo2 = new Tramo_Ruta(
+        null,
+        solicitudPost.getIdSolicitud(),
+        2,
+        TipoTramo.deposito_origen,
+        ciudadDeposito,
+        ciudadDestino,
+        fechaSalida2,
+        fechaLlegada2,
+        null,
+        null
+    );
+
+    // 6. Persisto los tramos
+    Tramo_rutaDTO respuesta1 = tramoService.crearTramo(tramo1);
+    Tramo_rutaDTO respuesta2 = tramoService.crearTramo(tramo2);
+
+    // 7. Armo la respuesta
+    DatosRespuestaPosteo respuesta = new DatosRespuestaPosteo(respuesta1, respuesta2);
+    return ResponseEntity.ok(respuesta);
+}
+
 
 }

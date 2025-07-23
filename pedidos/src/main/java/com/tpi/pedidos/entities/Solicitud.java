@@ -30,9 +30,9 @@ public class Solicitud {
     @ManyToOne @JoinColumn(name = "camion_id", nullable = true)
     private Camion camion;
 
-    @Column(name = "costo_estimado", nullable = false)
+    @Column(name = "costo_estimado", nullable = true)
     private Double costoEstimado;
 
-    @Column(name = "tiempo_estimado_horas", nullable = false)
+    @Column(name = "tiempo_estimado_horas", nullable = true)
     private Double tiempoEstimadoHoras;
 }

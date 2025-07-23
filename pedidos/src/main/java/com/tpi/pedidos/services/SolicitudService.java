@@ -31,8 +31,6 @@ public class SolicitudService {
                 .orElseThrow(() -> new EntityNotFoundException("Ciudad destino no encontrada")))
             .deposito(depRepo.findById(dto.getDepositoId())
                 .orElseThrow(() -> new EntityNotFoundException("Depósito no encontrado")))
-            .costoEstimado(dto.getCostoEstimado())
-            .tiempoEstimadoHoras(dto.getTiempoEstimadoHoras())
             .build();
 
         if (dto.getCamionId() != null) {
