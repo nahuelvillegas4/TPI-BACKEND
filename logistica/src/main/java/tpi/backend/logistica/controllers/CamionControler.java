@@ -7,26 +7,22 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import tpi.backend.logistica.services.CamionService;
+// @RestController
+// @RequestMapping("/camion")
+// public class CamionControler {
 
-import tpi.backend.logistica.dtos.CamionDTO;
+//     private final CamionService camionService;
 
-@RestController
-@RequestMapping("/camion")
-public class CamionControler {
+//     public CamionControler(CamionService camionService){
+//         this.camionService = camionService;
+//     }
 
-    private final CamionService camionService;
-
-    public CamionControler(CamionService camionService){
-        this.camionService = camionService;
-    }
-
-    @GetMapping
-    public ResponseEntity<List<CamionDTO>> obtenerDisponibles(){
-        List<CamionDTO> listaCamiones = camionService.obtenerDisponibles().stream()
-            .map(camionService::transformarDTO)
-            .toList();
-        return ResponseEntity.ok(listaCamiones);
-    }
+//     @GetMapping
+//     public ResponseEntity<List<CamionDTO>> obtenerDisponibles(){
+//         List<CamionDTO> listaCamiones = camionService.obtenerDisponibles().stream()
+//             .map(camionService::transformarDTO)
+//             .toList();
+//         return ResponseEntity.ok(listaCamiones);
+//     }
     
-}
+// }
