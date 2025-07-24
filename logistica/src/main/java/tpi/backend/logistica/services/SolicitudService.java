@@ -220,6 +220,9 @@ public class SolicitudService {
     Tramo_rutaDTO respuesta1 = tramoService.crearTramo(tramo1);
     Tramo_rutaDTO respuesta2 = tramoService.crearTramo(tramo2);
 
+    System.out.println("Respuesta1" + respuesta1);
+    System.out.println("Respuesta2"+ respuesta2);
+    
     // 7. Armo la respuesta
     DatosRespuestaPosteo respuesta = new DatosRespuestaPosteo(respuesta1, respuesta2);
     return ResponseEntity.ok(respuesta);

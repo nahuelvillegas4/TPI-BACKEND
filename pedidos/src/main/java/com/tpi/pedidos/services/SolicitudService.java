@@ -5,15 +5,20 @@ import com.tpi.pedidos.entities.*;
 import com.tpi.pedidos.repositories.*;
 import com.tpi.pedidos.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.tpi.pedidos.client.CiudadServiceClient;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class SolicitudService {
 
     private final SolicitudRepository repo;
@@ -21,6 +26,11 @@ public class SolicitudService {
     private final DepositoRepository depRepo;
     private final CamionRepository camRepo;
     private final CiudadServiceClient ciudadServiceClient; // El client HTTP
+    private final RestTemplate restTemplate;
+
+    @Value("${planificacion.url}")
+    private String planificacionUrl;
+
 
     @Transactional
     public SolicitudDto crear(CrearSolicitudDto dto) {
@@ -46,7 +56,35 @@ public class SolicitudService {
                 .orElseThrow(() -> new EntityNotFoundException("Camión no encontrado")));
         }
 
-        return map(repo.save(e));
+        e = repo.save(e);
+
+        // 2) Llamo al microservicio de planificación para obtener costo y tiempo
+        PlanificacionRequestDto req = new PlanificacionRequestDto(
+            e.getId(),
+            e.getCiudadOrigenId(),
+            e.getCiudadDestinoId(),
+            e.getDeposito().getId()
+        );
+
+
+        ResponseEntity<PlanificacionResponseDto> res = restTemplate.postForEntity(
+            planificacionUrl,
+            req,
+            PlanificacionResponseDto.class
+        );
+
+        if (!res.getStatusCode().is2xxSuccessful() || res.getBody() == null) {
+            throw new IllegalStateException("No se pudo calcular costo/tiempo desde el servicio de planificación");
+        }
+
+        log.debug("Llamo a depósito con id={}", res.getBody());
+
+        // 3) Seteo los valores retornados y guardo de nuevo
+        //e.setCostoEstimado(res.getBody().getCostoEstimado());
+        //e.setTiempoEstimadoHoras(res.getBody().getTiempoEstimadoHoras());
+        e = repo.save(e);
+
+        return map(e);
     }
 
     @Transactional(readOnly = true)
@@ -86,17 +124,18 @@ public class SolicitudService {
     @Transactional
     public SolicitudDto asignarCamion(Long solicitudId, Long camionId) {
         Solicitud e = repo.findById(solicitudId)
-            .orElseThrow(() -> new EntityNotFoundException("Solicitud no encontrada"));
+            .orElseThrow(() -> new EntityNotFoundException("Solicitud no encontrada: " + solicitudId));
         Camion c = camRepo.findById(camionId)
-            .orElseThrow(() -> new EntityNotFoundException("Camión no encontrado"));
+            .orElseThrow(() -> new EntityNotFoundException("Camión no encontrado: " + camionId));
         e.setCamion(c);
         return map(repo.save(e));
     }
 
     @Transactional
     public void eliminar(Long id) {
-        if (!repo.existsById(id))
+        if (!repo.existsById(id)) {
             throw new EntityNotFoundException("Solicitud no encontrada: " + id);
+        }
         repo.deleteById(id);
     }
 
@@ -112,4 +151,5 @@ public class SolicitudService {
             .tiempoEstimadoHoras(e.getTiempoEstimadoHoras())
             .build();
     }
+
 }
