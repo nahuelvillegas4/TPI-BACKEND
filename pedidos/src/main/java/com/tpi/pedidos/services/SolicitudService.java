@@ -1,4 +1,4 @@
-package com.tpi.pedidos.service;
+package com.tpi.pedidos.services;
 
 import com.tpi.pedidos.dtos.*;
 import com.tpi.pedidos.entities.*;
@@ -7,28 +7,36 @@ import com.tpi.pedidos.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.tpi.pedidos.client.CiudadServiceClient;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service @RequiredArgsConstructor
+@Service
+@RequiredArgsConstructor
 public class SolicitudService {
 
     private final SolicitudRepository repo;
     private final ContenedorRepository contRepo;
-    private final CiudadRepository ciudadRepo;
     private final DepositoRepository depRepo;
     private final CamionRepository camRepo;
+    private final CiudadServiceClient ciudadServiceClient; // El client HTTP
 
     @Transactional
     public SolicitudDto crear(CrearSolicitudDto dto) {
+        // Validar existencia de las ciudades por microservicio logística
+        if (!ciudadServiceClient.ciudadExiste(dto.getCiudadOrigenId())) {
+            throw new EntityNotFoundException("Ciudad origen no encontrada con id " + dto.getCiudadOrigenId());
+        }
+        if (!ciudadServiceClient.ciudadExiste(dto.getCiudadDestinoId())) {
+            throw new EntityNotFoundException("Ciudad destino no encontrada con id " + dto.getCiudadDestinoId());
+        }
+        // El resto sigue igual
         Solicitud e = Solicitud.builder()
             .contenedor(contRepo.findById(dto.getContenedorId())
                 .orElseThrow(() -> new EntityNotFoundException("Contenedor no encontrado")))
-            .ciudadOrigen(ciudadRepo.findById(dto.getCiudadOrigenId())
-                .orElseThrow(() -> new EntityNotFoundException("Ciudad origen no encontrada")))
-            .ciudadDestino(ciudadRepo.findById(dto.getCiudadDestinoId())
-                .orElseThrow(() -> new EntityNotFoundException("Ciudad destino no encontrada")))
+            .ciudadOrigenId(dto.getCiudadOrigenId())
+            .ciudadDestinoId(dto.getCiudadDestinoId())
             .deposito(depRepo.findById(dto.getDepositoId())
                 .orElseThrow(() -> new EntityNotFoundException("Depósito no encontrado")))
             .build();
@@ -60,6 +68,15 @@ public class SolicitudService {
     public SolicitudDto actualizar(Long id, ActualizarSolicitudDto dto) {
         Solicitud e = repo.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("Solicitud no encontrada: " + id));
+        // Si en actualizar también permitís cambiar origen/destino, agregá validación:
+        /*
+        if (dto.getCiudadOrigenId() != null && !ciudadServiceClient.ciudadExiste(dto.getCiudadOrigenId())) {
+            throw new EntityNotFoundException("Ciudad origen no encontrada con id " + dto.getCiudadOrigenId());
+        }
+        if (dto.getCiudadDestinoId() != null && !ciudadServiceClient.ciudadExiste(dto.getCiudadDestinoId())) {
+            throw new EntityNotFoundException("Ciudad destino no encontrada con id " + dto.getCiudadDestinoId());
+        }
+        */
         e.setCostoEstimado(dto.getCostoEstimado());
         e.setTiempoEstimadoHoras(dto.getTiempoEstimadoHoras());
         return map(repo.save(e));
@@ -87,12 +104,9 @@ public class SolicitudService {
         return SolicitudDto.builder()
             .id(e.getId())
             .contenedorId(e.getContenedor().getId())
-            .ciudadOrigenId(e.getCiudadOrigen().getId())
-            .ciudadOrigenNombre(e.getCiudadOrigen().getNombre())
-            .ciudadDestinoId(e.getCiudadDestino().getId())
-            .ciudadDestinoNombre(e.getCiudadDestino().getNombre())
+            .ciudadOrigenId(e.getCiudadOrigenId())
+            .ciudadDestinoId(e.getCiudadDestinoId())
             .depositoId(e.getDeposito().getId())
-            .depositoDireccion(e.getDeposito().getDireccion())
             .camionId(e.getCamion() != null ? e.getCamion().getId() : null)
             .costoEstimado(e.getCostoEstimado())
             .tiempoEstimadoHoras(e.getTiempoEstimadoHoras())

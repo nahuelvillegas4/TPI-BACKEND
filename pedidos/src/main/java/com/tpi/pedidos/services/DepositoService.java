@@ -5,12 +5,11 @@ import com.tpi.pedidos.dtos.CrearDepositoDto;
 import com.tpi.pedidos.dtos.ActualizarDepositoDto;
 import com.tpi.pedidos.exception.EntityNotFoundException;
 import com.tpi.pedidos.entities.Deposito;
-import com.tpi.pedidos.entities.Ciudad;
 import com.tpi.pedidos.repositories.DepositoRepository;
-import com.tpi.pedidos.repositories.CiudadRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.tpi.pedidos.client.CiudadServiceClient;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,46 +19,34 @@ import java.util.stream.Collectors;
 public class DepositoService {
 
     private final DepositoRepository repo;
-    private final CiudadRepository ciudadRepo;
+    private final CiudadServiceClient ciudadServiceClient; // Acá usamos tu client
 
     @Transactional
     public DepositoDto crear(CrearDepositoDto dto) {
-        // 1. Verificar que exista la ciudad
-        Ciudad ciudad = ciudadRepo.findById(dto.getCiudadId())
-            .orElseThrow(() -> new EntityNotFoundException(
-                "Ciudad no encontrada con id " + dto.getCiudadId()));
-
-        // 2. Construir entidad
+        if (!ciudadServiceClient.ciudadExiste(dto.getCiudadId())) {
+            throw new EntityNotFoundException("Ciudad no encontrada con id " + dto.getCiudadId());
+        }
         Deposito entidad = Deposito.builder()
             .direccion(dto.getDireccion())
-            .ciudad(ciudad)
+            .ciudadId(dto.getCiudadId())
             .latitud(dto.getLatitud())
             .longitud(dto.getLongitud())
             .build();
-
-        // 3. Guardar
         Deposito guardado = repo.save(entidad);
         return mapToDto(guardado);
     }
 
     @Transactional
     public DepositoDto actualizar(Long id, ActualizarDepositoDto dto) {
-        // 1. Buscar depósito existente
         Deposito entidad = repo.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("Depósito no encontrado con id " + id));
-
-        // 2. Verificar ciudad nueva (o misma)
-        Ciudad ciudad = ciudadRepo.findById(dto.getCiudadId())
-            .orElseThrow(() -> new EntityNotFoundException(
-                "Ciudad no encontrada con id " + dto.getCiudadId()));
-
-        // 3. Actualizar campos
+        if (!ciudadServiceClient.ciudadExiste(dto.getCiudadId())) {
+            throw new EntityNotFoundException("Ciudad no encontrada con id " + dto.getCiudadId());
+        }
         entidad.setDireccion(dto.getDireccion());
-        entidad.setCiudad(ciudad);
+        entidad.setCiudadId(dto.getCiudadId());
         entidad.setLatitud(dto.getLatitud());
         entidad.setLongitud(dto.getLongitud());
-
-        // 4. Guardar cambios
         Deposito actualizado = repo.save(entidad);
         return mapToDto(actualizado);
     }
@@ -67,9 +54,9 @@ public class DepositoService {
     @Transactional(readOnly = true)
     public List<DepositoDto> listar() {
         return repo.findAll()
-                   .stream()
-                   .map(this::mapToDto)
-                   .collect(Collectors.toList());
+            .stream()
+            .map(this::mapToDto)
+            .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
@@ -81,17 +68,15 @@ public class DepositoService {
 
     @Transactional(readOnly = true)
     public List<DepositoDto> listarPorCiudad(Long ciudadId) {
-        // verifica existencia de ciudad primero
-        if (!ciudadRepo.existsById(ciudadId)) {
+        if (!ciudadServiceClient.ciudadExiste(ciudadId)) {
             throw new EntityNotFoundException("Ciudad no encontrada con id " + ciudadId);
         }
         return repo.findByCiudadId(ciudadId)
-                   .stream()
-                   .map(this::mapToDto)
-                   .collect(Collectors.toList());
+            .stream()
+            .map(this::mapToDto)
+            .collect(Collectors.toList());
     }
 
-    // Borrar por id
     @Transactional
     public void eliminar(Long id) {
         if (!repo.existsById(id)) {
@@ -100,14 +85,12 @@ public class DepositoService {
         repo.deleteById(id);
     }
 
-
-
     // --- Helper de conversión ---
     private DepositoDto mapToDto(Deposito d) {
         return DepositoDto.builder()
             .id(d.getId())
             .direccion(d.getDireccion())
-            .ciudadId(d.getCiudad().getId())
+            .ciudadId(d.getCiudadId())
             .latitud(d.getLatitud())
             .longitud(d.getLongitud())
             .build();

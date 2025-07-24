@@ -1,7 +1,7 @@
 package com.tpi.pedidos.controller;
 
 import com.tpi.pedidos.dtos.*;
-import com.tpi.pedidos.service.SolicitudService;
+import com.tpi.pedidos.services.SolicitudService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
