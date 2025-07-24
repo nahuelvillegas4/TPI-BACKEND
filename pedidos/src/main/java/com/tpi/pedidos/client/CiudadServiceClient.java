@@ -1,5 +1,6 @@
 package com.tpi.pedidos.client;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.client.HttpClientErrorException;
@@ -10,8 +11,8 @@ import org.springframework.web.client.HttpClientErrorException;
 public class CiudadServiceClient {
     private final RestTemplate restTemplate = new RestTemplate();
     
-    
-    private static final String BASE_URL = "http://localhost:8069/logistica/ciudades/";
+    @Value("${ciudad.service.url}")
+    private  String BASE_URL;
 
     public boolean ciudadExiste(Long ciudadId) {
         try {
