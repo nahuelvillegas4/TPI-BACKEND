@@ -13,7 +13,9 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import tpi.backend.logistica.clients.ContenedorClient;
 import tpi.backend.logistica.clients.DepositoClient;
+import tpi.backend.logistica.dtos.ContenedorDTO;
 import tpi.backend.logistica.dtos.CotizacionSolicitudDTO;
 import tpi.backend.logistica.dtos.DatosRespuestaPosteo;
 import tpi.backend.logistica.dtos.DepositoDTO;
@@ -35,18 +37,21 @@ public class SolicitudService {
     private final CiudadService ciudadService;
     private final TramoService tramoService;
     private final DepositoClient depositoClient;
+    private final ContenedorClient contenedorClient;
 
     @Value("${maps.service.url}")
     private String mapsServiceUrl;
 
-    public SolicitudService(TarifaBaseService tarifaBaseService, TarifaKMService tarifaKMService, CiudadService ciudadService, TramoService tramoService, DepositoClient depositoClient){
+    public SolicitudService(TarifaBaseService tarifaBaseService, TarifaKMService tarifaKMService, CiudadService ciudadService, TramoService tramoService, 
+                DepositoClient depositoClient, ContenedorClient contenedorClient){
         this.tarifaKMService = tarifaKMService;
         this.tarifaBaseService = tarifaBaseService;
         this.ciudadService = ciudadService;
         this.tramoService = tramoService;
         this.depositoClient = depositoClient;
+        this.contenedorClient = contenedorClient;
     }
-
+    //corregir calculo de tarifas
     public ResponseEntity<RespuestaCotizacionDTO> cotizarSolicitud(double pesoContenedor, double volumenContenedor, Ciudad ciudadOrigen, Ciudad ciudadDestino, 
                         double latitudDeposito, double longitudDeposito){
         
@@ -60,13 +65,13 @@ public class SolicitudService {
         DistanciaDTO d1 = distancia1.getBody();
         DistanciaDTO d2 = distancia2.getBody();
 
-        double tarifaKM = obtenerTarifa(volumenContenedor, pesoContenedor);
+        double tarifaKM = obtenerTarifa(pesoContenedor, volumenContenedor);
 
         TarifaBase tarifaBase = tarifaBaseService
             .obtenerTarifaBase(1)
             .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tarifa no encontrada"));
 
-        double monto = (d1.getKilometros() + d2.getKilometros()); //* tarifaKM.getTarifa();
+        double monto = ((d1.getKilometros() + d2.getKilometros()) * tarifaKM ) + tarifaBase.getTarifa();
 
         String duracion = sumarDistancias(d1, d2);
 
@@ -163,13 +168,14 @@ public class SolicitudService {
         return new Timestamp(salida.getTime() + tiempoAdicional1);
     }
 
-    public ResponseEntity<DatosRespuestaPosteo> crearRutas(
-        PostSolicitudDTO solicitudPost
-) {
+    public ResponseEntity<DatosRespuestaPosteo> crearRutas(PostSolicitudDTO solicitudPost)     {
 
     DepositoDTO deposito = depositoClient
-            .getDepositoById(solicitudPost.getIdCiudadDeposito());  // ② getIdCiudadDeposito()
+            .getDepositoById(solicitudPost.getidDeposito());  // ② getIdCiudadDeposito()
 
+    ContenedorDTO contenedor = contenedorClient
+            .getContenedorById(solicitudPost.getidContenedor());
+            
         // 3. Usamos el id de ciudad que nos devolvió el depósito
     Ciudad ciudadDeposito = ciudadService
             .obtenerCiudad(deposito.getIdCiudad())                // ③ deposito.getIdCiudad()
@@ -187,15 +193,11 @@ public class SolicitudService {
         .orElseThrow(() -> new ResponseStatusException(
             HttpStatus.NOT_FOUND, "Ciudad destino no encontrada"));
 
-    // 2. Extraigo las coordenadas del depósito de la entidad
-    double latitudDeposito  = ciudadDeposito.getLatitud();
-    double longitudDeposito = ciudadDeposito.getLongitud();
-
     // 3. Consulto distancias
     ResponseEntity<DistanciaDTO> distancia1 = 
-        obtenerDistancia(ciudadOrigen,  latitudDeposito, longitudDeposito);
+        obtenerDistancia(ciudadOrigen,  deposito.getLatitud(), deposito.getLongitud());
     ResponseEntity<DistanciaDTO> distancia2 = 
-        obtenerDistancia(ciudadDestino, latitudDeposito, longitudDeposito);
+        obtenerDistancia(ciudadDestino, deposito.getLatitud(), deposito.getLongitud());
 
     if (!distancia1.getStatusCode().is2xxSuccessful() ||
         !distancia2.getStatusCode().is2xxSuccessful()) {
@@ -244,13 +246,21 @@ public class SolicitudService {
     Tramo_rutaDTO respuesta1 = tramoService.crearTramo(tramo1);
     Tramo_rutaDTO respuesta2 = tramoService.crearTramo(tramo2);
 
-    double tiempoEstimadoHoras = obte
+    double tiempoEstimadoHoras = sumarDistanciasHoras(d1, d2);
+
+    double tarifaKM = obtenerTarifa(contenedor.getPeso(), contenedor.getVolumen());
+
+        TarifaBase tarifaBase = tarifaBaseService
+            .obtenerTarifaBase(1)
+            .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tarifa no encontrada"));
+
+    double monto = ((d1.getKilometros() + d2.getKilometros()) * tarifaKM ) + tarifaBase.getTarifa();
 
     System.out.println("Respuesta1" + respuesta1);
     System.out.println("Respuesta2"+ respuesta2);
     
     // 7. Armo la respuesta
-    DatosRespuestaPosteo respuesta = new DatosRespuestaPosteo(respuesta1, respuesta2);
+    DatosRespuestaPosteo respuesta = new DatosRespuestaPosteo(respuesta1, respuesta2, tiempoEstimadoHoras, monto);
     return ResponseEntity.ok(respuesta);
 }
 

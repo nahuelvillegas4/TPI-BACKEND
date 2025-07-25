@@ -9,9 +9,13 @@ public class DatosRespuestaPosteo {
 
     public Tramo_rutaDTO tramo1;
     public Tramo_rutaDTO tramo2;
+    public double totalHorasEstimado;
+    public double montoEstimado;
 
-    public DatosRespuestaPosteo(Tramo_rutaDTO respuesta1, Tramo_rutaDTO respuesta2) {
+    public DatosRespuestaPosteo(Tramo_rutaDTO respuesta1, Tramo_rutaDTO respuesta2, double horas, double monto) {
         this.tramo1 = respuesta1;
         this.tramo2 = respuesta2;
+        this.totalHorasEstimado = horas;
+        this.montoEstimado = monto;
     }
 }
