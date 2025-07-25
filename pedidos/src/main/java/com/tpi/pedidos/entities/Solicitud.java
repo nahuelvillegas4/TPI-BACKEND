@@ -1,9 +1,7 @@
 package com.tpi.pedidos.entities;
 
-import com.tpi.pedidos.entities.*;
 import jakarta.persistence.*;
 import lombok.*;
-
 
 @Entity
 @Table(name = "solicitud")
@@ -17,11 +15,11 @@ public class Solicitud {
     @ManyToOne @JoinColumn(name = "contenedor_id", nullable = false)
     private Contenedor contenedor;
 
-    @ManyToOne @JoinColumn(name = "ciudad_origen_id", nullable = false)
-    private Ciudad ciudadOrigen;
+    @Column(name = "ciudad_origen_id", nullable = false)
+    private Long ciudadOrigenId; // Solo ID
 
-    @ManyToOne @JoinColumn(name = "ciudad_destino_id", nullable = false)
-    private Ciudad ciudadDestino;
+    @Column(name = "ciudad_destino_id", nullable = false)
+    private Long ciudadDestinoId; // Solo ID
 
     @ManyToOne @JoinColumn(name = "deposito_id", nullable = false)
     private Deposito deposito;

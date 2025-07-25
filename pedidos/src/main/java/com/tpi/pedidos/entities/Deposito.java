@@ -15,14 +15,13 @@ public class Deposito {
     @Column(nullable = false)
     private String direccion;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "ciudad_id", nullable = false)
-    private Ciudad ciudad;
+    // Solo el id de la ciudad (sin ManyToOne)
+    @Column(name = "ciudad_id", nullable = false)
+    private Long ciudadId;
 
     @Column(nullable = false)
     private Double latitud;
 
     @Column(nullable = false)
     private Double longitud;
-
 }

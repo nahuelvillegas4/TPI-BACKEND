@@ -20,7 +20,6 @@ public class CrearContenedorDto {
     @Positive(message = "El volumen debe ser un valor positivo")
     private Double volumen;
 
-    @NotNull(message = "El estado es obligatorio")
     private Estado estado;
 
     @NotNull(message = "El clienteId es obligatorio")

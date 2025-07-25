@@ -25,20 +25,20 @@ public class ContenedorService {
 
     @Transactional
     public ContenedorDto crear(CrearContenedorDto dto) {
-        // 1. Verificamos que el cliente exista
         Cliente cliente = clienteRepo.findById(dto.getClienteId())
             .orElseThrow(() -> new EntityNotFoundException(
                 "Cliente no encontrado con id " + dto.getClienteId()));
 
-        // 2. Construimos la entidad
+        // Usar el estado que viene, o el por defecto si es null
+        Estado estado = (dto.getEstado() != null) ? dto.getEstado() : Estado.en_espera_solicitud;
+
         Contenedor entidad = Contenedor.builder()
             .peso(dto.getPeso())
             .volumen(dto.getVolumen())
-            .estado(dto.getEstado())
+            .estado(estado)
             .cliente(cliente)
             .build();
 
-        // 3. Guardamos
         Contenedor guardado = contenedorRepo.save(entidad);
         return mapToDto(guardado);
     }
