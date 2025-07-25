@@ -77,19 +77,10 @@ public class SolicitudControler {
 
     @PostMapping("/crear")
     public ResponseEntity<DatosRespuestaPosteo> crearRutas(@RequestBody PostSolicitudDTO solicitudPost) {
-        // 2. Invocamos al servicio de depósitos usando el idCity correcto
-        DepositoDTO deposito = depositoClient
-            .getDepositoById(solicitudPost.getIdCiudadDeposito());  // ② getIdCiudadDeposito()
-
-        // 3. Usamos el id de ciudad que nos devolvió el depósito
-        Ciudad ciudadDeposito = ciudadService
-            .obtenerCiudad(deposito.getIdCiudad())                // ③ deposito.getIdCiudad()
-            .orElseThrow(() -> new ResponseStatusException(
-                HttpStatus.NOT_FOUND, "Ciudad del depósito no encontrada"));
 
         // 4. Delegamos al service pasándole la entidad ciudadDeposito
         DatosRespuestaPosteo resultado = solicitudService
-            .crearRutas(solicitudPost, ciudadDeposito)             // ahora recibe Ciudad
+            .crearRutas(solicitudPost)             // ahora recibe Ciudad
             .getBody();
 
         return ResponseEntity.ok(resultado);

@@ -13,8 +13,10 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import tpi.backend.logistica.clients.DepositoClient;
 import tpi.backend.logistica.dtos.CotizacionSolicitudDTO;
 import tpi.backend.logistica.dtos.DatosRespuestaPosteo;
+import tpi.backend.logistica.dtos.DepositoDTO;
 import tpi.backend.logistica.dtos.DistanciaDTO;
 import tpi.backend.logistica.dtos.PostSolicitudDTO;
 import tpi.backend.logistica.dtos.RespuestaCotizacionDTO;
@@ -32,15 +34,17 @@ public class SolicitudService {
     private final TarifaBaseService tarifaBaseService;
     private final CiudadService ciudadService;
     private final TramoService tramoService;
+    private final DepositoClient depositoClient;
 
     @Value("${maps.service.url}")
     private String mapsServiceUrl;
 
-    public SolicitudService(TarifaBaseService tarifaBaseService, TarifaKMService tarifaKMService, CiudadService ciudadService, TramoService tramoService){
+    public SolicitudService(TarifaBaseService tarifaBaseService, TarifaKMService tarifaKMService, CiudadService ciudadService, TramoService tramoService, DepositoClient depositoClient){
         this.tarifaKMService = tarifaKMService;
         this.tarifaBaseService = tarifaBaseService;
         this.ciudadService = ciudadService;
         this.tramoService = tramoService;
+        this.depositoClient = depositoClient;
     }
 
     public ResponseEntity<RespuestaCotizacionDTO> cotizarSolicitud(double pesoContenedor, double volumenContenedor, Ciudad ciudadOrigen, Ciudad ciudadDestino, 
@@ -128,6 +132,17 @@ public class SolicitudService {
         return duracion;
     }
 
+    public Double sumarDistanciasHoras(DistanciaDTO d1, DistanciaDTO d2){
+        Double hora1 = (double)obtenerHoras(d1);
+        Double hora2 = (double)obtenerHoras(d2);
+
+        int minutos1 = obtenerMinutos(d1);
+        int minutos2 = obtenerMinutos(d2);
+
+        Double horas = hora1 + hora2 + (minutos1 + minutos2)/60;
+        return horas;
+    }
+
     public int obtenerHoras(DistanciaDTO d1){
         String[] horas1 = d1.getDuracionHoras().split(" ");
         return Integer.parseInt(horas1[0].trim());
@@ -149,9 +164,18 @@ public class SolicitudService {
     }
 
     public ResponseEntity<DatosRespuestaPosteo> crearRutas(
-        PostSolicitudDTO solicitudPost,
-        Ciudad ciudadDeposito
+        PostSolicitudDTO solicitudPost
 ) {
+
+    DepositoDTO deposito = depositoClient
+            .getDepositoById(solicitudPost.getIdCiudadDeposito());  // ② getIdCiudadDeposito()
+
+        // 3. Usamos el id de ciudad que nos devolvió el depósito
+    Ciudad ciudadDeposito = ciudadService
+            .obtenerCiudad(deposito.getIdCiudad())                // ③ deposito.getIdCiudad()
+            .orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.NOT_FOUND, "Ciudad del depósito no encontrada"));
+    
     // 1. Cargo ciudad origen y destino
     Ciudad ciudadOrigen = ciudadService
         .obtenerCiudad(solicitudPost.getIdCiudadOrigen())
@@ -219,6 +243,8 @@ public class SolicitudService {
     // 6. Persisto los tramos
     Tramo_rutaDTO respuesta1 = tramoService.crearTramo(tramo1);
     Tramo_rutaDTO respuesta2 = tramoService.crearTramo(tramo2);
+
+    double tiempoEstimadoHoras = obte
 
     // 7. Armo la respuesta
     DatosRespuestaPosteo respuesta = new DatosRespuestaPosteo(respuesta1, respuesta2);
