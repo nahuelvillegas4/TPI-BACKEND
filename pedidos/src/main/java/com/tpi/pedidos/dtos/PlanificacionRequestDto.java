@@ -16,5 +16,6 @@ public class PlanificacionRequestDto {
     private Long idSolicitud;
     private Long idCiudadOrigen;
     private Long idCiudadDestino;
-    private Long idCiudadDeposito;
+    private Long idDeposito;
+    private Long idContenedor;
 }

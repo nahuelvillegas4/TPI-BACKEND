@@ -63,7 +63,8 @@ public class SolicitudService {
             e.getId(),
             e.getCiudadOrigenId(),
             e.getCiudadDestinoId(),
-            e.getDeposito().getId()
+            e.getDeposito().getId(),
+            e.getContenedor().getId()
         );
 
 
@@ -80,8 +81,8 @@ public class SolicitudService {
         log.debug("Llamo a depósito con id={}", res.getBody());
 
         // 3) Seteo los valores retornados y guardo de nuevo
-        //e.setCostoEstimado(res.getBody().getCostoEstimado());
-        //e.setTiempoEstimadoHoras(res.getBody().getTiempoEstimadoHoras());
+        e.setCostoEstimado(res.getBody().getMontoEstimado());
+        e.setTiempoEstimadoHoras(res.getBody().getTotalHorasEstimado());
         e = repo.save(e);
 
         return map(e);

@@ -256,11 +256,12 @@ public class SolicitudService {
 
     double monto = ((d1.getKilometros() + d2.getKilometros()) * tarifaKM ) + tarifaBase.getTarifa();
 
-    System.out.println("Respuesta1" + respuesta1);
-    System.out.println("Respuesta2"+ respuesta2);
+    
     
     // 7. Armo la respuesta
     DatosRespuestaPosteo respuesta = new DatosRespuestaPosteo(respuesta1, respuesta2, tiempoEstimadoHoras, monto);
+
+    System.out.println("Respuesta" + respuesta);
     return ResponseEntity.ok(respuesta);
 }
 
