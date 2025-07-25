@@ -123,13 +123,32 @@ public class SolicitudService {
     /** Asigna un camión después de creada la solicitud */
     @Transactional
     public SolicitudDto asignarCamion(Long solicitudId, Long camionId) {
-        Solicitud e = repo.findById(solicitudId)
-            .orElseThrow(() -> new EntityNotFoundException("Solicitud no encontrada: " + solicitudId));
-        Camion c = camRepo.findById(camionId)
-            .orElseThrow(() -> new EntityNotFoundException("Camión no encontrado: " + camionId));
-        e.setCamion(c);
-        return map(repo.save(e));
+    Solicitud solicitud = repo.findById(solicitudId)
+        .orElseThrow(() -> new EntityNotFoundException("Solicitud no encontrada: " + solicitudId));
+    Camion camion = camRepo.findById(camionId)
+        .orElseThrow(() -> new EntityNotFoundException("Camión no encontrado: " + camionId));
+
+    // --- NUEVA VALIDACIÓN ---
+    Double pesoContenedor   = solicitud.getContenedor().getPeso();
+    Double volumenContenedor= solicitud.getContenedor().getVolumen();
+    Double pesoMaxCamion    = camion.getCapacidadPeso();
+    Double volMaxCamion     = camion.getCapacidadVolumen();
+
+    if (pesoContenedor > pesoMaxCamion) {
+        throw new IllegalStateException(
+            String.format("No se puede asignar: peso del contenedor (%.2f) excede capacidad del camión (%.2f)",
+                          pesoContenedor, pesoMaxCamion));
     }
+    if (volumenContenedor > volMaxCamion) {
+        throw new IllegalStateException(
+            String.format("No se puede asignar: volumen del contenedor (%.2f) excede capacidad del camión (%.2f)",
+                          volumenContenedor, volMaxCamion));
+    }
+
+    solicitud.setCamion(camion);
+    return map(repo.save(solicitud));
+}
+
 
     @Transactional
     public void eliminar(Long id) {

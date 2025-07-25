@@ -8,10 +8,10 @@ import lombok.*;
 public class ActualizarCamionDto {
 
     @NotNull @Positive(message = "La capacidad de peso debe ser positiva")
-    private Integer capacidadPeso;
+    private Double capacidadPeso;
 
     @NotNull @Positive(message = "La capacidad de volumen debe ser positiva")
-    private Integer capacidadVolumen;
+    private Double capacidadVolumen;
 
     @NotNull
     private Boolean disponible;

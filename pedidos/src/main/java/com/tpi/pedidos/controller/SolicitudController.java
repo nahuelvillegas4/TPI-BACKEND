@@ -58,3 +58,7 @@ public class SolicitudController {
         return ResponseEntity.ok(service.asignarCamion(id, camionId));
     }
 }
+
+
+
+

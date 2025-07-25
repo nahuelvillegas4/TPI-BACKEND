@@ -7,7 +7,7 @@ import lombok.*;
 public class CamionDto {
 
     private Long id;
-    private Integer capacidadPeso;
-    private Integer capacidadVolumen;
+    private Double capacidadPeso;
+    private Double capacidadVolumen;
     private Boolean disponible;
 }
