@@ -250,9 +250,9 @@ public class SolicitudService {
 
     double tarifaKM = obtenerTarifa(contenedor.getPeso(), contenedor.getVolumen());
 
-        TarifaBase tarifaBase = tarifaBaseService
-            .obtenerTarifaBase(1)
-            .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tarifa no encontrada"));
+    TarifaBase tarifaBase = tarifaBaseService
+        .obtenerTarifaBase(1)
+        .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tarifa no encontrada"));
 
     double monto = ((d1.getKilometros() + d2.getKilometros()) * tarifaKM ) + tarifaBase.getTarifa();
 
