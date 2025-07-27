@@ -11,16 +11,18 @@ public class GWConfig {
 
     @Bean
     public RouteLocator customRoutes(RouteLocatorBuilder builder,
-                                     @Value("${url.servicio.admin}") String uriAdmin) {
+                                     @Value("${url.servicio.pedidos}") String uriPedidos) {
         return builder.routes()
-            // Ruteo al servicio de logistica
-            .route("admin", r -> r
-                .path("/api/depositos/**", "/api/camiones/**")              // cualquier /api/depositos o /api/depositos/{id}
-                .uri(uriAdmin)                      // e.g. http://localhost:8080
+
+            // Ruteo al microservicio de pedidos
+            .route("pedidos", r -> r
+                // Aquí definís el path de entrada por el gateway...
+                .path("/pedidos/**")
+                // ...y lo rediriges a http://localhost:8089
+                .uri(uriPedidos)
             )
-            
-            // Ruteo al servicio PRUEBA
 
             .build();
     }
 }
+
