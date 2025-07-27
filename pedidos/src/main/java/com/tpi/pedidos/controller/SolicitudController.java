@@ -69,6 +69,12 @@ public class SolicitudController {
         return ResponseEntity.noContent().build();
         }
 
+    @GetMapping("/{id}/cambios-estado")
+    public ResponseEntity<List<CambioEstadoDto>> obtenerHistorialCambiosEstado(@PathVariable Long id) {
+    return ResponseEntity.ok(service.obtenerHistorialCambiosEstado(id));
+}
+
+
 }
 
 

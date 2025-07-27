@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.tpi.pedidos.client.CiudadServiceClient;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,6 +27,7 @@ public class SolicitudService {
     private final DepositoRepository depRepo;
     private final CamionRepository camRepo;
     private final CiudadServiceClient ciudadServiceClient; // El client HTTP
+    private final CambioEstadoRepository cambioEstadoRepository;
     private final RestTemplate restTemplate;
 
     @Value("${planificacion.url}")
@@ -158,9 +160,33 @@ public class SolicitudService {
     Contenedor contenedor = contRepo.findById(solicitud.getContenedor().getId())
         .orElseThrow(() -> new RuntimeException("Contenedor no encontrado"));
 
+    Estado estadoAnterior = contenedor.getEstado();
     contenedor.setEstado(nuevoEstado);
     contRepo.save(contenedor);
+
+    // Registrar el cambio de estado
+    CambioEstado cambio = new CambioEstado();
+    cambio.setSolicitudId(idSolicitud);
+    cambio.setEstadoAnterior(estadoAnterior);
+    cambio.setEstadoNuevo(nuevoEstado);
+    cambio.setFechaCambio(LocalDateTime.now());
+
+    cambioEstadoRepository.save(cambio);
 }
+
+    @Transactional
+    public List<CambioEstadoDto> obtenerHistorialCambiosEstado(Long solicitudId) {
+    List<CambioEstado> historial = cambioEstadoRepository.findBySolicitudIdOrderByFechaCambioAsc(solicitudId);
+
+    return historial.stream().map(cambio -> {
+        CambioEstadoDto dto = new CambioEstadoDto();
+        dto.setEstadoAnterior(cambio.getEstadoAnterior());
+        dto.setEstadoNuevo(cambio.getEstadoNuevo());
+        dto.setFechaCambio(cambio.getFechaCambio());
+        return dto;
+    }).toList();
+}
+
 
 
     @Transactional
