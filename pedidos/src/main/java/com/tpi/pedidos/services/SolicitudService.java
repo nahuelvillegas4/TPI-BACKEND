@@ -150,6 +150,18 @@ public class SolicitudService {
     return map(repo.save(solicitud));
 }
 
+    @Transactional
+    public void actualizarEstadoContenedorDeSolicitud(Long idSolicitud, Estado nuevoEstado) {
+    Solicitud solicitud = repo.findById(idSolicitud)
+        .orElseThrow(() -> new RuntimeException("Solicitud no encontrada"));
+
+    Contenedor contenedor = contRepo.findById(solicitud.getContenedor().getId())
+        .orElseThrow(() -> new RuntimeException("Contenedor no encontrado"));
+
+    contenedor.setEstado(nuevoEstado);
+    contRepo.save(contenedor);
+}
+
 
     @Transactional
     public void eliminar(Long id) {

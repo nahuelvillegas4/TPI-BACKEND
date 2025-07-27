@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.tpi.pedidos.entities.Estado;
 
 import java.net.URI;
 import java.util.List;
@@ -57,6 +58,17 @@ public class SolicitudController {
     ) {
         return ResponseEntity.ok(service.asignarCamion(id, camionId));
     }
+
+
+    @PutMapping("/{id}/estado")
+    public ResponseEntity<Void> actualizarEstadoContenedor(
+        @PathVariable Long id,
+        @RequestBody Estado nuevoEstado
+        )   {
+        service.actualizarEstadoContenedorDeSolicitud(id, nuevoEstado);
+        return ResponseEntity.noContent().build();
+        }
+
 }
 
 
