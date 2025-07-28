@@ -131,7 +131,14 @@ public class SolicitudService {
     Camion camion = camRepo.findById(camionId)
         .orElseThrow(() -> new EntityNotFoundException("Camión no encontrado: " + camionId));
 
-    // --- NUEVA VALIDACIÓN ---
+
+    // --- VALIDACIÓN 1: Que no esté ya asignado a otra solicitud ---
+    if (repo.existsByCamionIdAndIdNot(camionId, solicitudId)) {
+        throw new IllegalStateException(
+          String.format("No se puede asignar: el camión %d ya está en otra solicitud", camionId));
+    }
+
+    // --- VALIDACIÓN 2: Que el contenedor no supere el peso y volumen máximo del camión ---
     Double pesoContenedor   = solicitud.getContenedor().getPeso();
     Double volumenContenedor= solicitud.getContenedor().getVolumen();
     Double pesoMaxCamion    = camion.getCapacidadPeso();
