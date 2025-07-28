@@ -8,19 +8,21 @@ import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 
 @Configuration
 public class GWConfig {
+    
+    @Value("${url.servicio.logistica}")
+    private String logisticaServiceUrl;
+    @Value("${url.servicio.pedidos}")
+    private String pedidosServiceUrl;
 
     @Bean
-    public RouteLocator customRoutes(RouteLocatorBuilder builder,
-                                     @Value("${url.servicio.admin}") String uriAdmin) {
+    public RouteLocator gatewayRoutes(RouteLocatorBuilder builder) {
         return builder.routes()
-            // Ruteo al servicio de logistica
-            .route("admin", r -> r
-                .path("/api/depositos/**", "/api/camiones/**")              // cualquier /api/depositos o /api/depositos/{id}
-                .uri(uriAdmin)                      // e.g. http://localhost:8080
-            )
-            
-            // Ruteo al servicio PRUEBA
-
+            .route("logistica_route", r -> r
+                .path("/logistica/**")
+                .uri(logisticaServiceUrl))
+            .route("pedidos_route", r -> r
+                .path("/pedidos/**")
+                .uri(pedidosServiceUrl))
             .build();
     }
 }
