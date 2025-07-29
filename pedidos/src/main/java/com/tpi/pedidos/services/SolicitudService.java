@@ -33,6 +33,9 @@ public class SolicitudService {
     @Value("${planificacion.url}")
     private String planificacionUrl;
 
+    @Value("${tramos.service.url}")
+    private String actualizacionTramoUrl;
+
 
     @Transactional
     public SolicitudDto crear(CrearSolicitudDto dto) {
@@ -171,12 +174,32 @@ public class SolicitudService {
     contenedor.setEstado(nuevoEstado);
     contRepo.save(contenedor);
 
+
     // Registrar el cambio de estado
     CambioEstado cambio = new CambioEstado();
     cambio.setSolicitudId(idSolicitud);
     cambio.setEstadoAnterior(estadoAnterior);
     cambio.setEstadoNuevo(nuevoEstado);
     cambio.setFechaCambio(LocalDateTime.now());
+
+    ActualizarEstadoRequestDto actDto = new ActualizarEstadoRequestDto(
+        idSolicitud,
+        nuevoEstado.name()
+    );
+
+    System.out.println("ACT ANTES DE ENVIAR:" + actDto.getEstadoContenedor());
+
+    ResponseEntity<DatosRespuestaActualizacionDto> res = restTemplate.postForEntity(
+            actualizacionTramoUrl,
+            actDto,
+            DatosRespuestaActualizacionDto.class
+        );
+
+    if (!res.getStatusCode().is2xxSuccessful() || res.getBody() == null) {
+        throw new IllegalStateException("No se pudo actualizar los tramos de ruta de la solicitud");
+    }
+
+    System.out.println("RES:" + res.getBody());
 
     cambioEstadoRepository.save(cambio);
 }
