@@ -11,12 +11,10 @@ INSERT INTO ciudad (nombre, latitud, longitud) VALUES
   ('Posadas', -27.3628, -55.8960);
 
 
-INSERT INTO tarifakm (tarifa) VALUES
-  (5.0),   -- Categoría 1
-  (10.0),  -- Categoría 2
-  (15.0),  -- Categoría 3
-  (20.0),  -- Categoría 4
-  (25.0);  -- Categoría 5
+INSERT INTO tarifa_km (vol_max, peso_max, tarifa) VALUES (5.0, 500.0, 120.0);
+INSERT INTO tarifa_km (vol_max, peso_max, tarifa) VALUES (15.0, 2000.0, 100.0);
+INSERT INTO tarifa_km (vol_max, peso_max, tarifa) VALUES (30.0, 5000.0, 85.0);
+INSERT INTO tarifa_km (vol_max, peso_max, tarifa) VALUES (60.0, 10000.0, 70.0);
 
 INSERT INTO Tarifa_Base (tarifa) VALUES
   (200.0),  -- Monto base de transporte

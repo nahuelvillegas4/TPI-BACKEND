@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.tpi.pedidos.client.CiudadServiceClient;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,6 +27,7 @@ public class SolicitudService {
     private final DepositoRepository depRepo;
     private final CamionRepository camRepo;
     private final CiudadServiceClient ciudadServiceClient; // El client HTTP
+    private final CambioEstadoRepository cambioEstadoRepository;
     private final RestTemplate restTemplate;
 
     @Value("${planificacion.url}")
@@ -63,7 +65,8 @@ public class SolicitudService {
             e.getId(),
             e.getCiudadOrigenId(),
             e.getCiudadDestinoId(),
-            e.getDeposito().getId()
+            e.getDeposito().getId(),
+            e.getContenedor().getId()
         );
 
 
@@ -80,8 +83,8 @@ public class SolicitudService {
         log.debug("Llamo a depósito con id={}", res.getBody());
 
         // 3) Seteo los valores retornados y guardo de nuevo
-        //e.setCostoEstimado(res.getBody().getCostoEstimado());
-        //e.setTiempoEstimadoHoras(res.getBody().getTiempoEstimadoHoras());
+        e.setCostoEstimado(res.getBody().getMontoEstimado());
+        e.setTiempoEstimadoHoras(res.getBody().getTotalHorasEstimado());
         e = repo.save(e);
 
         return map(e);
@@ -123,13 +126,75 @@ public class SolicitudService {
     /** Asigna un camión después de creada la solicitud */
     @Transactional
     public SolicitudDto asignarCamion(Long solicitudId, Long camionId) {
-        Solicitud e = repo.findById(solicitudId)
-            .orElseThrow(() -> new EntityNotFoundException("Solicitud no encontrada: " + solicitudId));
-        Camion c = camRepo.findById(camionId)
-            .orElseThrow(() -> new EntityNotFoundException("Camión no encontrado: " + camionId));
-        e.setCamion(c);
-        return map(repo.save(e));
+    Solicitud solicitud = repo.findById(solicitudId)
+        .orElseThrow(() -> new EntityNotFoundException("Solicitud no encontrada: " + solicitudId));
+    Camion camion = camRepo.findById(camionId)
+        .orElseThrow(() -> new EntityNotFoundException("Camión no encontrado: " + camionId));
+
+
+    // --- VALIDACIÓN 1: Que no esté ya asignado a otra solicitud ---
+    if (repo.existsByCamionIdAndIdNot(camionId, solicitudId)) {
+        throw new IllegalStateException(
+          String.format("No se puede asignar: el camión %d ya está en otra solicitud", camionId));
     }
+
+    // --- VALIDACIÓN 2: Que el contenedor no supere el peso y volumen máximo del camión ---
+    Double pesoContenedor   = solicitud.getContenedor().getPeso();
+    Double volumenContenedor= solicitud.getContenedor().getVolumen();
+    Double pesoMaxCamion    = camion.getCapacidadPeso();
+    Double volMaxCamion     = camion.getCapacidadVolumen();
+
+    if (pesoContenedor > pesoMaxCamion) {
+        throw new IllegalStateException(
+            String.format("No se puede asignar: peso del contenedor (%.2f) excede capacidad del camión (%.2f)",
+                          pesoContenedor, pesoMaxCamion));
+    }
+    if (volumenContenedor > volMaxCamion) {
+        throw new IllegalStateException(
+            String.format("No se puede asignar: volumen del contenedor (%.2f) excede capacidad del camión (%.2f)",
+                          volumenContenedor, volMaxCamion));
+    }
+
+    solicitud.setCamion(camion);
+    return map(repo.save(solicitud));
+}
+
+    @Transactional
+    public void actualizarEstadoContenedorDeSolicitud(Long idSolicitud, Estado nuevoEstado) {
+    Solicitud solicitud = repo.findById(idSolicitud)
+        .orElseThrow(() -> new RuntimeException("Solicitud no encontrada"));
+
+    Contenedor contenedor = contRepo.findById(solicitud.getContenedor().getId())
+        .orElseThrow(() -> new RuntimeException("Contenedor no encontrado"));
+
+    Estado estadoAnterior = contenedor.getEstado();
+    contenedor.setEstado(nuevoEstado);
+    contRepo.save(contenedor);
+
+    // Registrar el cambio de estado
+    CambioEstado cambio = new CambioEstado();
+    cambio.setSolicitudId(idSolicitud);
+    cambio.setEstadoAnterior(estadoAnterior);
+    cambio.setEstadoNuevo(nuevoEstado);
+    cambio.setFechaCambio(LocalDateTime.now());
+
+    cambioEstadoRepository.save(cambio);
+}
+
+    @Transactional
+    public List<CambioEstadoDto> obtenerHistorialCambiosEstado(Long solicitudId) {
+    List<CambioEstado> historial = cambioEstadoRepository.findBySolicitudIdOrderByFechaCambioAsc(solicitudId);
+
+    return historial.stream().map(cambio -> {
+        CambioEstadoDto dto = new CambioEstadoDto();
+        dto.setEstadoAnterior(cambio.getEstadoAnterior());
+        dto.setEstadoNuevo(cambio.getEstadoNuevo());
+        dto.setFechaCambio(cambio.getFechaCambio());
+        return dto;
+    }).toList();
+}
+
+
 
     @Transactional
     public void eliminar(Long id) {

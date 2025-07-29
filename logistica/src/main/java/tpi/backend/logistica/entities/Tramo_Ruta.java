@@ -49,3 +49,4 @@ public class Tramo_Ruta {
 
     private Timestamp fechaRealLlegada;
 }
+

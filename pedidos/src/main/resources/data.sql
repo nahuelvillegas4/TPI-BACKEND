@@ -1,5 +1,5 @@
 INSERT INTO CAMION (capacidad_peso, capacidad_volumen, disponible) VALUES
-  (10000, 40, TRUE),
+  (10000, 2, TRUE),
   (8000, 35, TRUE),
   (12000,50, FALSE),
   (9000, 45, TRUE),

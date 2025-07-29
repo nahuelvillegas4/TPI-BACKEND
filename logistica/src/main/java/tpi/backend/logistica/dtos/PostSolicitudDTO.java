@@ -7,7 +7,8 @@ public class PostSolicitudDTO {
     private Long idSolicitud;
     private Long idCiudadOrigen;
     private Long idCiudadDestino;
-    private Long idCiudadDeposito;
+    private Long idDeposito;
+    private Long idContenedor;
 
     // Constructor vacío (para Jackson)
     public PostSolicitudDTO() { }
@@ -17,12 +18,14 @@ public class PostSolicitudDTO {
         @JsonProperty("idSolicitud")      Long idSolicitud,
         @JsonProperty("idCiudadOrigen")   Long idCiudadOrigen,
         @JsonProperty("idCiudadDestino")  Long idCiudadDestino,
-        @JsonProperty("idCiudadDeposito") Long idCiudadDeposito
+        @JsonProperty("idDeposito") Long idDeposito,
+        @JsonProperty("idContenedor") Long idContenedor
     ) {
         this.idSolicitud       = idSolicitud;
         this.idCiudadOrigen    = idCiudadOrigen;
         this.idCiudadDestino   = idCiudadDestino;
-        this.idCiudadDeposito  = idCiudadDeposito;
+        this.idDeposito  = idDeposito;
+        this.idContenedor = idContenedor;
     }
 
     // Getters y setters
@@ -47,11 +50,19 @@ public class PostSolicitudDTO {
         this.idCiudadDestino = idCiudadDestino;
     }
 
-    public Long getIdCiudadDeposito() {
-        return idCiudadDeposito;
+    public Long getidDeposito() {
+        return idDeposito;
     }
-    public void setIdCiudadDeposito(Long idCiudadDeposito) {
-        this.idCiudadDeposito = idCiudadDeposito;
+    public void setidDeposito(Long idDeposito) {
+        this.idDeposito = idDeposito;
+    }
+
+    public Long getidContenedor(){
+        return idContenedor;
+    }
+
+    public void setidContenedor(Long idContenedor){
+        this.idContenedor = idContenedor;
     }
 
     @Override
@@ -60,7 +71,7 @@ public class PostSolicitudDTO {
             "idSolicitud="       + idSolicitud +
             ", idCiudadOrigen="  + idCiudadOrigen +
             ", idCiudadDestino=" + idCiudadDestino +
-            ", idCiudadDeposito="+ idCiudadDeposito +
+            ", idDeposito="+ idDeposito +
             '}';
     }
 }

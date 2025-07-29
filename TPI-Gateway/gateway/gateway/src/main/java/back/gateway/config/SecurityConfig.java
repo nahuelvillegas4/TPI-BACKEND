@@ -52,10 +52,9 @@ public class SecurityConfig {
         return http
             .csrf(ServerHttpSecurity.CsrfSpec::disable)
             .authorizeExchange(auth -> auth
-                .pathMatchers("/logistica/admin/**").hasRole("admin")     // solo admin
-                .pathMatchers("/logistica/cliente/**").hasRole("cliente") // solo cliente
-                .pathMatchers("/pedidos/admin/**").hasRole("admin")       // solo admin
-                .pathMatchers("/pedidos/cliente/**").hasRole("cliente")   // solo cliente
+                .pathMatchers("/api/login/oauth2/code/keycloak").permitAll()
+                .pathMatchers("/logistica/**").hasRole("admin")     // solo admin      
+                .pathMatchers("/pedidos/**").hasRole("cliente")   // solo cliente
                 .anyExchange().authenticated()  // cualquier otra ruta requiere autenticación
             )
             .oauth2ResourceServer(oauth2 -> oauth2

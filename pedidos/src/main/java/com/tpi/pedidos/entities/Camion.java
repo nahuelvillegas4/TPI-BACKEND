@@ -14,11 +14,11 @@ public class Camion {
 
     /** Capacidad máxima de peso en kg */
     @Column(name = "capacidad_peso", nullable = false)
-    private Integer capacidadPeso;
+    private Double capacidadPeso;
 
     /** Capacidad máxima de volumen en m³ */
     @Column(name = "capacidad_volumen", nullable = false)
-    private Integer capacidadVolumen;
+    private Double capacidadVolumen;
 
     /** Indica si está disponible para nuevas rutas */
     @Column(nullable = false)

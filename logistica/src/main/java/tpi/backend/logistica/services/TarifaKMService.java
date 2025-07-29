@@ -16,9 +16,11 @@ public class TarifaKMService {
         this.tarifaKMRepository = tarifaKMRepository;
     }
 
-    public Optional<TarifaKM> obtenerTarifa(long idTarifa){
-        Optional<TarifaKM> tarifa = tarifaKMRepository.findById(idTarifa);
-        return tarifa;
+    public Double obtenerTarifa(double pesoContenedor, double volumenContenedor){
+
+        TarifaKM tarifa = tarifaKMRepository
+            .findFirstByVolMaxGreaterThanEqualAndPesoMaxGreaterThanEqualOrderByVolMaxAscPesoMaxAsc(volumenContenedor, pesoContenedor);
+        return tarifa.getTarifa();
     }
     
 }
