@@ -14,7 +14,8 @@ public class AuthController {
 
     @GetMapping("/api/login/oauth2/code/keycloak")
     public Mono<String> intercambiarCode(@RequestParam String code) {
-        String tokenUrl = "http://localhost:8084/realms/tpi-backend/protocol/openid-connect/token";
+        String tokenUrl = "http://keycloak:8080/realms/tpi-backend/protocol/openid-connect/token"; 
+                        
 
         return webClient.post()
             .uri(tokenUrl)
