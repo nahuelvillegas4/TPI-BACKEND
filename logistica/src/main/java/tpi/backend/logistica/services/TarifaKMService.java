@@ -81,4 +81,11 @@ public class TarifaKMService {
         return respuesta;
     }
 
+    public void eliminarTarifaKM(Long id) {
+    if (!tarifaKMRepository.existsById(id)) {
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Tarifa no encontrada");
+    }
+    tarifaKMRepository.deleteById(id);
+    }
+
 }
