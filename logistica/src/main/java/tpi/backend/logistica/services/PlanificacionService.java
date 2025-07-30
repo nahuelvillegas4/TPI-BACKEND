@@ -16,7 +16,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import tpi.backend.logistica.clients.ContenedorClient;
 import tpi.backend.logistica.clients.DepositoClient;
 import tpi.backend.logistica.dtos.ContenedorDTO;
-import tpi.backend.logistica.dtos.CotizacionSolicitudDTO;
 import tpi.backend.logistica.dtos.DatosRespuestaPosteo;
 import tpi.backend.logistica.dtos.DepositoDTO;
 import tpi.backend.logistica.dtos.DistanciaDTO;
@@ -25,12 +24,11 @@ import tpi.backend.logistica.dtos.RespuestaCotizacionDTO;
 import tpi.backend.logistica.dtos.Tramo_rutaDTO;
 import tpi.backend.logistica.entities.Ciudad;
 import tpi.backend.logistica.entities.TarifaBase;
-import tpi.backend.logistica.entities.TarifaKM;
 import tpi.backend.logistica.entities.TipoTramo;
 import tpi.backend.logistica.entities.Tramo_Ruta;
 @Service
 @Slf4j
-public class SolicitudService {
+public class PlanificacionService {
     
     private final TarifaKMService tarifaKMService;
     private final TarifaBaseService tarifaBaseService;
@@ -42,7 +40,7 @@ public class SolicitudService {
     @Value("${maps.service.url}")
     private String mapsServiceUrl;
 
-    public SolicitudService(TarifaBaseService tarifaBaseService, TarifaKMService tarifaKMService, CiudadService ciudadService, TramoService tramoService, 
+    public PlanificacionService(TarifaBaseService tarifaBaseService, TarifaKMService tarifaKMService, CiudadService ciudadService, TramoService tramoService, 
                 DepositoClient depositoClient, ContenedorClient contenedorClient){
         this.tarifaKMService = tarifaKMService;
         this.tarifaBaseService = tarifaBaseService;
