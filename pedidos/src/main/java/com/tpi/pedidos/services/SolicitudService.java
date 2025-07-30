@@ -33,6 +33,9 @@ public class SolicitudService {
     @Value("${planificacion.url}")
     private String planificacionUrl;
 
+    @Value("${tramos.service.url}")
+    private String actualizacionTramoUrl;
+
 
     @Transactional
     public SolicitudDto crear(CrearSolicitudDto dto) {
@@ -171,6 +174,7 @@ public class SolicitudService {
     contenedor.setEstado(nuevoEstado);
     contRepo.save(contenedor);
 
+
     // Registrar el cambio de estado
     CambioEstado cambio = new CambioEstado();
     cambio.setSolicitudId(idSolicitud);
@@ -178,8 +182,48 @@ public class SolicitudService {
     cambio.setEstadoNuevo(nuevoEstado);
     cambio.setFechaCambio(LocalDateTime.now());
 
+    ActualizarEstadoRequestDto actDto = new ActualizarEstadoRequestDto(
+        idSolicitud,
+        nuevoEstado.name()
+    );
+
+    System.out.println("ACT ANTES DE ENVIAR:" + actDto.getEstadoContenedor());
+
+    ResponseEntity<DatosRespuestaActualizacionDto> res = restTemplate.postForEntity(
+            actualizacionTramoUrl,
+            actDto,
+            DatosRespuestaActualizacionDto.class
+        );
+
+    if (!res.getStatusCode().is2xxSuccessful() || res.getBody() == null) {
+        throw new IllegalStateException("No se pudo actualizar los tramos de ruta de la solicitud");
+    }
+
+    System.out.println("RES:" + res.getBody());
+
+
+
+    // 4) Retorno el DTO deserializado
+    DatosRespuestaActualizacionDto responseBody = res.getBody();
+
+    // --- NUEVA VALIDACIÓN Y ACTUALIZACIÓN DE LA SOLICITUD ---
+    Double costoAdicional = responseBody.getCostoAdicionalEstadia();
+    if (costoAdicional != null && costoAdicional > 0) {
+        // Buscamos y actualizamos la solicitud
+        Solicitud solicitudParaActualizar = repo.findById(idSolicitud)
+            .orElseThrow(() -> new EntityNotFoundException("Solicitud no encontrada: " + idSolicitud));
+
+
+        solicitudParaActualizar.setCostoEstimado(solicitudParaActualizar.getCostoEstimado() + costoAdicional);
+        repo.save(solicitudParaActualizar);
+    }
+
+
+
     cambioEstadoRepository.save(cambio);
 }
+
+
 
     @Transactional
     public List<CambioEstadoDto> obtenerHistorialCambiosEstado(Long solicitudId) {

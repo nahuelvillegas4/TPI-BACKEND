@@ -2,7 +2,7 @@ package tpi.backend.logistica.controllers;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,7 +23,7 @@ public class TramoController {
         this.tramoService = tramoService;
     }
 
-    @PutMapping("/modificar")
+    @PostMapping("/modificar")
     public ResponseEntity<DatosRespuestaActualizacionDTO> actualizarTramos(@RequestBody ActualizarTramoDTO nuevoTramoDTO){
         DatosRespuestaActualizacionDTO respuesta = tramoService.actualizarTramo(nuevoTramoDTO);
         return ResponseEntity.ok(respuesta);
