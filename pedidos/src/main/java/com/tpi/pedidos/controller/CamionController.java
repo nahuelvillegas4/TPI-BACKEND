@@ -17,7 +17,7 @@ public class CamionController {
 
     private final CamionService service;
 
-    /** POST /pedidos/camiones */
+    // POST /pedidos/camiones
     @PostMapping
     public ResponseEntity<CamionDto> crear(@Valid @RequestBody CrearCamionDto dto) {
         CamionDto created = service.crear(dto);
@@ -26,7 +26,7 @@ public class CamionController {
             .body(created);
     }
 
-    /** PUT /pedidos/camiones/{id} */
+    // PUT /pedidos/camiones/{id}
     @PutMapping("/{id}")
     public ResponseEntity<CamionDto> actualizar(
         @PathVariable Long id,

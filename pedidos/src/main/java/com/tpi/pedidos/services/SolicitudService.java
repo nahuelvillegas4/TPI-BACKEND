@@ -158,6 +158,7 @@ public class SolicitudService {
                           volumenContenedor, volMaxCamion));
     }
 
+    camion.setDisponible(false);
     solicitud.setCamion(camion);
     return map(repo.save(solicitud));
 }
@@ -224,7 +225,7 @@ public class SolicitudService {
 }
 
 
-
+    
     @Transactional
     public List<CambioEstadoDto> obtenerHistorialCambiosEstado(Long solicitudId) {
     List<CambioEstado> historial = cambioEstadoRepository.findBySolicitudIdOrderByFechaCambioAsc(solicitudId);
