@@ -59,10 +59,14 @@ public class TramoService {
 
         if (tramos.estadoContenedor().equals("Retirado_de_depósito")) {
             tramo1 = tramoRutaRepository.findByIdsolicitudAndOrden(tramos.idSolicitud(), 1);
-            tramo.setFechaRealSalida(new Timestamp(System.currentTimeMillis()));
+            long unDiaEnMs = 24L * 60 * 60 * 1000;  // milisegundos en un día
+            tramo.setFechaRealSalida(
+                new Timestamp(System.currentTimeMillis() + unDiaEnMs)
+            );
             costoDias = calcularCostoTarifaDeposito(tramo1, tramo);
             tramoRutaRepository.save(tramo);
         }
+
 
         if (tramos.estadoContenedor().equals("Entregado_en_destino")) {
             tramo.setFechaRealLlegada(new Timestamp(System.currentTimeMillis()));

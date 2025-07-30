@@ -201,8 +201,29 @@ public class SolicitudService {
 
     System.out.println("RES:" + res.getBody());
 
+
+
+    // 4) Retorno el DTO deserializado
+    DatosRespuestaActualizacionDto responseBody = res.getBody();
+
+    // --- NUEVA VALIDACIÓN Y ACTUALIZACIÓN DE LA SOLICITUD ---
+    Double costoAdicional = responseBody.getCostoAdicionalEstadia();
+    if (costoAdicional != null && costoAdicional > 0) {
+        // Buscamos y actualizamos la solicitud
+        Solicitud solicitudParaActualizar = repo.findById(idSolicitud)
+            .orElseThrow(() -> new EntityNotFoundException("Solicitud no encontrada: " + idSolicitud));
+
+
+        solicitudParaActualizar.setCostoEstimado(solicitudParaActualizar.getCostoEstimado() + costoAdicional);
+        repo.save(solicitudParaActualizar);
+    }
+
+
+
     cambioEstadoRepository.save(cambio);
 }
+
+
 
     @Transactional
     public List<CambioEstadoDto> obtenerHistorialCambiosEstado(Long solicitudId) {
