@@ -13,6 +13,4 @@ public class ActualizarCamionDto {
     @NotNull @Positive(message = "La capacidad de volumen debe ser positiva")
     private Double capacidadVolumen;
 
-    @NotNull
-    private Boolean disponible;
 }

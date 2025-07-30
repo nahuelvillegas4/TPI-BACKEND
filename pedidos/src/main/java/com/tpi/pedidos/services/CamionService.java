@@ -33,7 +33,6 @@ public class CamionService {
             .orElseThrow(() -> new EntityNotFoundException("Camión no encontrado con id " + id));
         e.setCapacidadPeso(dto.getCapacidadPeso());
         e.setCapacidadVolumen(dto.getCapacidadVolumen());
-        e.setDisponible(dto.getDisponible());
         Camion updated = repo.save(e);
         return toDto(updated);
     }

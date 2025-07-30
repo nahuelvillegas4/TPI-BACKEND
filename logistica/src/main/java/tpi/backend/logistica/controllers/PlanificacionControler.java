@@ -22,7 +22,7 @@ import tpi.backend.logistica.dtos.DepositoDTO;
 import tpi.backend.logistica.dtos.RespuestaCotizacionDTO;
 import tpi.backend.logistica.entities.Ciudad;
 import tpi.backend.logistica.services.CiudadService;
-import tpi.backend.logistica.services.SolicitudService;
+import tpi.backend.logistica.services.PlanificacionService;
 import tpi.backend.logistica.services.TarifaBaseService;
 import tpi.backend.logistica.services.TarifaKMService;
 import tpi.backend.logistica.services.TramoService;
@@ -31,18 +31,18 @@ import tpi.backend.logistica.clients.DepositoClient;
 @RestController
 @Slf4j
 @RequestMapping("/planificacion")
-public class SolicitudControler {
+public class PlanificacionControler {
 
     @Value("${maps.service.url}")
     private String mapsServiceUrl;
 
     private final CiudadService ciudadService;
-    private final SolicitudService solicitudService;
+    private final PlanificacionService solicitudService;
     private final HttpServletRequest request;
     private final DepositoClient depositoClient;
 
-    public SolicitudControler(CiudadService ciudadService,
-        TarifaBaseService tarifaBaseService, TarifaKMService tarifaKMService, DepositoClient depositoClient, SolicitudService solicitudService, TramoService tramoService, HttpServletRequest request){
+    public PlanificacionControler(CiudadService ciudadService,
+        TarifaBaseService tarifaBaseService, TarifaKMService tarifaKMService, DepositoClient depositoClient, PlanificacionService solicitudService, TramoService tramoService, HttpServletRequest request){
         this.ciudadService = ciudadService;
         this.solicitudService = solicitudService;
         this.request = request;
