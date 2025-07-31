@@ -80,7 +80,7 @@ public class PlanificacionService {
     }
 
     private double obtenerTarifa(double volumenContenedor, double pesoContenedor) {
-        double prueba = 2;
+        double prueba = tarifaKMService.obtenerTarifa(pesoContenedor, volumenContenedor);
         return prueba;
     }
 
