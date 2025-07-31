@@ -6,6 +6,5 @@ import java.util.List;
 
 public interface CamionRepository extends JpaRepository<Camion, Long> {
 
-    /** Opcional: listar solo camiones disponibles */
     List<Camion> findByDisponibleTrue();
 }

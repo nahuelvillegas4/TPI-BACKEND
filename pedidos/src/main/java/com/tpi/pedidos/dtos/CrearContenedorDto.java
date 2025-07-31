@@ -1,4 +1,3 @@
-// src/main/java/com/tpi/pedidos/dto/CrearContenedorDto.java
 package com.tpi.pedidos.dtos;
 
 import jakarta.validation.constraints.*;

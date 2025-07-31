@@ -15,7 +15,6 @@ public class Deposito {
     @Column(nullable = false)
     private String direccion;
 
-    // Solo el id de la ciudad (sin ManyToOne)
     @Column(name = "ciudad_id", nullable = false)
     private Long ciudadId;
 

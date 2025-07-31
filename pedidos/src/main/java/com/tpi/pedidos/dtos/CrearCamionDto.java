@@ -1,4 +1,3 @@
-// CrearCamionDto.java
 package com.tpi.pedidos.dtos;
 
 import jakarta.validation.constraints.*;

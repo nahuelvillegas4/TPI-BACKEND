@@ -7,5 +7,5 @@ import lombok.*;
 public class ActualizarSolicitudDto {
     @NotNull private Double costoEstimado;
     @NotNull private Double tiempoEstimadoHoras;
-    // si quisieras permitir recambiar camión, añade aquí Long camionId
+    
 }

@@ -21,7 +21,7 @@ public class Contenedor {
     private Double volumen;
 
     @Enumerated(EnumType.STRING)
-    private Estado estado; // Puede usarse CHECK o Enum si querés validación
+    private Estado estado;
 
     @ManyToOne
     @JoinColumn(name = "cliente_id", nullable = false)

@@ -5,10 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * Respuesta que recibimos del microservicio de planificación:
- * costo estimado y tiempo estimado en horas.
- */
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

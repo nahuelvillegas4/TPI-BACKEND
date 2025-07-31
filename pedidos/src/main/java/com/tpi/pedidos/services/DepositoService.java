@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class DepositoService {
 
     private final DepositoRepository repo;
-    private final CiudadServiceClient ciudadServiceClient; // Acá usamos tu client
+    private final CiudadServiceClient ciudadServiceClient; 
 
     @Transactional
     public DepositoDto crear(CrearDepositoDto dto) {

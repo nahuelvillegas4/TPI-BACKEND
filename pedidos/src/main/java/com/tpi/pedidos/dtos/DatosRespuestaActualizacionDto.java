@@ -6,9 +6,7 @@ import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
 
-/**
- * DTO que representa la respuesta del otro microservicio tras el PUT de estado.
- */
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

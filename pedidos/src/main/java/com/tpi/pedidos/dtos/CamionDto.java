@@ -1,4 +1,3 @@
-// CamionDto.java
 package com.tpi.pedidos.dtos;
 
 import lombok.*;

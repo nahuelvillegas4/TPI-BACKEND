@@ -9,7 +9,6 @@ public class SolicitudDto {
     private Long ciudadOrigenId;
     private Long ciudadDestinoId;
     private Long depositoId;
-    /** Puede ser null hasta asignarse */
     private Long camionId;
     private Double costoEstimado;
     private Double tiempoEstimadoHoras;

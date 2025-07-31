@@ -1,4 +1,3 @@
-// src/main/java/com/tpi/pedidos/dto/ContenedorDto.java
 package com.tpi.pedidos.dtos;
 
 import lombok.*;

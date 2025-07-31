@@ -5,9 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * Payload que enviamos al microservicio de planificación
- */
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

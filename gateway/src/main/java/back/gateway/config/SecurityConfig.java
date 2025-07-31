@@ -41,7 +41,9 @@ public class SecurityConfig {
 
                 // Rutas de admin
                 .pathMatchers("/logistica/**").hasRole("admin")
-                .pathMatchers("/pedidos/solicitudes/**").hasRole("admin")
+                .pathMatchers("/pedidos/**").hasRole("admin")
+            
+
 
                 // El resto requiere autenticación
                 .anyExchange().authenticated()

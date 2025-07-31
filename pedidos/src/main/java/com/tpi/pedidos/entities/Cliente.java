@@ -23,5 +23,5 @@ public class Cliente {
     private String email;
 
     @NotBlank
-    private String password; // Esto se encriptaría en la lógica de registro
+    private String password;
 }
