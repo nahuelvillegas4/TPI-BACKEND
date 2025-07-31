@@ -30,7 +30,7 @@ import tpi.backend.logistica.clients.DepositoClient;
 
 @RestController
 @Slf4j
-@RequestMapping("/planificacion")
+@RequestMapping("/logistica/planificacion")
 public class PlanificacionControler {
 
     @Value("${maps.service.url}")

@@ -14,7 +14,7 @@ import tpi.backend.logistica.dtos.tarifaKMDTO;
 import tpi.backend.logistica.services.TramoService;
 
 @RestController
-@RequestMapping("/tramos")
+@RequestMapping("/logistica/tramos")
 public class TramoController {
     
     private final TramoService tramoService;

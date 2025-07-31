@@ -22,7 +22,7 @@ import tpi.backend.logistica.services.TarifaBaseService;
 import tpi.backend.logistica.services.TarifaKMService;
 
 @RestController
-@RequestMapping("/tarifas")
+@RequestMapping("/logistica/tarifas")
 public class tarifaController {
     
     private final TarifaKMService tarifaKMService;
