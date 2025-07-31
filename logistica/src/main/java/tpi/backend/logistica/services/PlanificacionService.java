@@ -79,9 +79,9 @@ public class PlanificacionService {
 
     }
 
-    private double obtenerTarifa(double pesoContenedor, double volumenContenedor) {
-        double prueba = tarifaKMService.obtenerTarifa(pesoContenedor, volumenContenedor);
-        return prueba;
+    private Double obtenerTarifa(double pesoContenedor, double volumenContenedor) {
+        Double prueba = tarifaKMService.obtenerTarifa(pesoContenedor, volumenContenedor);
+        return prueba != null ? prueba : null;
     }
 
     public ResponseEntity<DistanciaDTO> obtenerDistancia(Ciudad ciudad, double latitudDeposito, double longitudDeposito){
@@ -246,7 +246,11 @@ public class PlanificacionService {
 
     double tiempoEstimadoHoras = sumarDistanciasHoras(d1, d2);
 
-    double tarifaKM = obtenerTarifa(contenedor.getPeso(), contenedor.getVolumen());
+    Double tarifaKM = obtenerTarifa(contenedor.getPeso(), contenedor.getVolumen());
+
+    if (tarifaKM == null) {
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No se encontró una tarifa adecuada, por favor cree una");
+    }
 
     TarifaBase tarifaBase = tarifaBaseService
         .obtenerTarifaBase(1)

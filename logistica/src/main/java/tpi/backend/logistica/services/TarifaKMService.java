@@ -27,7 +27,7 @@ public class TarifaKMService {
 
         TarifaKM tarifa = tarifaKMRepository
             .findFirstByVolMaxGreaterThanEqualAndPesoMaxGreaterThanEqualOrderByVolMaxAscPesoMaxAsc(volumenContenedor, pesoContenedor);
-        return tarifa.getTarifa();
+        return tarifa != null ? tarifa.getTarifa(): null;
     }
 
     public tarifaKMDTO crearTarifaNueva(CrearTarifaDTO nuevaTarifaDTO) {
