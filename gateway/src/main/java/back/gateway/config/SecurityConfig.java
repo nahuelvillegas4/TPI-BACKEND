@@ -3,6 +3,7 @@ package back.gateway.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
@@ -29,10 +30,21 @@ public class SecurityConfig {
         return http
             .csrf(ServerHttpSecurity.CsrfSpec::disable)
             .authorizeExchange(auth -> auth
+
+                // Login de Keycloak libre
                 .pathMatchers("/api/login/oauth2/code/keycloak").permitAll()
-                .pathMatchers("/logistica/**").hasRole("admin")     // solo admin      
-                .pathMatchers("/pedidos/**").hasRole("cliente")   // solo cliente
-                .anyExchange().authenticated()  // cualquier otra ruta requiere autenticación
+
+                // Rutas de cliente
+                .pathMatchers(HttpMethod.POST,   "/pedidos/solicitudes").hasRole("cliente")
+                .pathMatchers(HttpMethod.GET,    "/pedidos/solicitudes/*/seguimiento").hasRole("cliente")
+                .pathMatchers(HttpMethod.DELETE, "/pedidos/solicitudes/*").hasRole("cliente")
+
+                // Rutas de admin
+                .pathMatchers("/logistica/**").hasRole("admin")
+                .pathMatchers("/pedidos/solicitudes/**").hasRole("admin")
+
+                // El resto requiere autenticación
+                .anyExchange().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2
                 .jwt(jwtSpec -> jwtSpec
@@ -59,7 +71,6 @@ public class SecurityConfig {
         if (!(roles instanceof List<?> roleList)) {
             return List.of();
         }
-        
         return roleList.stream()
                 .filter(Objects::nonNull)
                 .map(Object::toString)
