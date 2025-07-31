@@ -39,6 +39,13 @@ public class SolicitudService {
 
     @Transactional
     public SolicitudDto crear(CrearSolicitudDto dto) {
+
+        // Validar que el contenedor no se encuentre en otra solicitud activa
+        if (repo.existsByContenedorId(dto.getContenedorId())) {
+        throw new IllegalArgumentException(
+            "El contenedor con id " + dto.getContenedorId() + " ya está asignado a otra solicitud.");
+        }
+
         // Validar existencia de las ciudades por microservicio logística
         if (!ciudadServiceClient.ciudadExiste(dto.getCiudadOrigenId())) {
             throw new EntityNotFoundException("Ciudad origen no encontrada con id " + dto.getCiudadOrigenId());
@@ -46,6 +53,10 @@ public class SolicitudService {
         if (!ciudadServiceClient.ciudadExiste(dto.getCiudadDestinoId())) {
             throw new EntityNotFoundException("Ciudad destino no encontrada con id " + dto.getCiudadDestinoId());
         }
+
+
+
+    
         // El resto sigue igual
         Solicitud e = Solicitud.builder()
             .contenedor(contRepo.findById(dto.getContenedorId())
@@ -112,15 +123,7 @@ public class SolicitudService {
     public SolicitudDto actualizar(Long id, ActualizarSolicitudDto dto) {
         Solicitud e = repo.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("Solicitud no encontrada: " + id));
-        // Si en actualizar también permitís cambiar origen/destino, agregá validación:
-        /*
-        if (dto.getCiudadOrigenId() != null && !ciudadServiceClient.ciudadExiste(dto.getCiudadOrigenId())) {
-            throw new EntityNotFoundException("Ciudad origen no encontrada con id " + dto.getCiudadOrigenId());
-        }
-        if (dto.getCiudadDestinoId() != null && !ciudadServiceClient.ciudadExiste(dto.getCiudadDestinoId())) {
-            throw new EntityNotFoundException("Ciudad destino no encontrada con id " + dto.getCiudadDestinoId());
-        }
-        */
+       
         e.setCostoEstimado(dto.getCostoEstimado());
         e.setTiempoEstimadoHoras(dto.getTiempoEstimadoHoras());
         return map(repo.save(e));

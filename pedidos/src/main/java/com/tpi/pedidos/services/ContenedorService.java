@@ -29,13 +29,12 @@ public class ContenedorService {
             .orElseThrow(() -> new EntityNotFoundException(
                 "Cliente no encontrado con id " + dto.getClienteId()));
 
-        // Usar el estado que viene, o el por defecto si es null
-        Estado estado = (dto.getEstado() != null) ? dto.getEstado() : Estado.en_espera_solicitud;
+        Estado estadoPorDefecto = Estado.en_espera_solicitud;
 
         Contenedor entidad = Contenedor.builder()
             .peso(dto.getPeso())
             .volumen(dto.getVolumen())
-            .estado(estado)
+            .estado(estadoPorDefecto)
             .cliente(cliente)
             .build();
 
@@ -58,7 +57,6 @@ public class ContenedorService {
         // 3. Actualizamos los campos
         entidad.setPeso(dto.getPeso());
         entidad.setVolumen(dto.getVolumen());
-        entidad.setEstado(dto.getEstado());
         entidad.setCliente(cliente);
 
         // 4. Guardamos y devolvemos
