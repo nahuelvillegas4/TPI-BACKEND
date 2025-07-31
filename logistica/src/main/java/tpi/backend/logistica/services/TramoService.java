@@ -1,6 +1,8 @@
 package tpi.backend.logistica.services;
 
 import java.sql.Timestamp;
+import java.util.List;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -29,7 +31,9 @@ public class TramoService {
 
     public Tramo_rutaDTO crearTramo(Tramo_Ruta tramo){
         tramoRutaRepository.save(tramo);
-        Tramo_rutaDTO respuesta = new Tramo_rutaDTO(tramo.getIdsolicitud(),tramo.getOrden());
+        Tramo_rutaDTO respuesta = new Tramo_rutaDTO(tramo.getIdsolicitud(),tramo.getOrden(), tramo.getTipoTramo(), tramo.getCiudadOrigen().getId(),
+                        tramo.getCiudadDestino().getId(), tramo.getFechaEstimadaSalida(), tramo.getFechaEstimadaLlegada(), tramo.getFechaRealSalida()
+                        ,tramo.getFechaRealLlegada());
         return respuesta;
     }
 
@@ -92,6 +96,25 @@ public class TramoService {
         }
 
         return diferenciaDias * tarifaBase.getTarifa();
+    }
+
+    public List<Tramo_rutaDTO> obtenerTramos() {
+        List<Tramo_rutaDTO> respuesta = tramoRutaRepository.findAll().stream().map(tramo -> new Tramo_rutaDTO(tramo.getIdsolicitud(),tramo.getOrden(), tramo.getTipoTramo(), tramo.getCiudadOrigen().getId(),
+                        tramo.getCiudadDestino().getId(), tramo.getFechaEstimadaSalida(), tramo.getFechaEstimadaLlegada(), tramo.getFechaRealSalida()
+                        ,tramo.getFechaRealLlegada())).toList();
+        return respuesta;
+    }
+
+    public List<Tramo_rutaDTO> obtenerTramo(Long idSolicitud){
+     List<Tramo_Ruta> tramos = Optional.ofNullable(tramoRutaRepository.findByIdsolicitud(idSolicitud))
+        .filter(list -> !list.isEmpty())
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No se encontraron tramos para la solicitud"));
+
+        return tramos.stream()
+            .map(tramo -> new Tramo_rutaDTO(tramo.getIdsolicitud(),tramo.getOrden(), tramo.getTipoTramo(), tramo.getCiudadOrigen().getId(),
+                        tramo.getCiudadDestino().getId(), tramo.getFechaEstimadaSalida(), tramo.getFechaEstimadaLlegada(), tramo.getFechaRealSalida()
+                        ,tramo.getFechaRealLlegada()))
+            .toList();
     }
 
 }
