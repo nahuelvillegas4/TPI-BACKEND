@@ -171,8 +171,13 @@ public class SolicitudService {
     Solicitud solicitud = repo.findById(idSolicitud)
         .orElseThrow(() -> new RuntimeException("Solicitud no encontrada"));
 
+    if (solicitud.getCamion() == null || solicitud.getCamion().getId() == null) {
+        throw new IllegalStateException("La solicitud " + idSolicitud + " no tiene asignado un Camion");
+    }
+
     Contenedor contenedor = contRepo.findById(solicitud.getContenedor().getId())
         .orElseThrow(() -> new RuntimeException("Contenedor no encontrado"));
+
 
     Estado estadoAnterior = contenedor.getEstado();
     contenedor.setEstado(nuevoEstado);
